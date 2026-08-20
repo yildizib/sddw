@@ -74,6 +74,11 @@ Every step supports two interaction modes:
 | **Interactive** | *(default)* | Full guided dialog — one question at a time, every section confirmed |
 | **Auto** | `--auto` | Fully autonomous — no questions, best-judgment decisions |
 
+Claude Code uses the `/sddw:<step>` command format. OpenCode uses the
+equivalent `/sddw-<step>` command format. Both adapters use the same core
+workflow instructions, questionnaires, specifications, and `.sddw/` artifact
+layout.
+
 ## Usage
 
 **Vibecoding** — `--auto`. The agent decides everything.

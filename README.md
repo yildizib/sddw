@@ -7,6 +7,15 @@
 [![X (Twitter)](https://img.shields.io/badge/X-@SDDWorkflows-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/SDDWorkflows)
 [![Slides](https://img.shields.io/badge/Slides-SDD%20Workflow-FBBC04?style=for-the-badge&logo=googleslides&logoColor=white)](https://docs.google.com/presentation/d/1SjKXF7hkoqyiN9-3tBGY4PDGvS3iqVyovDlJC_hYvMA/edit?usp=sharing)
 
+> This repository is a fork of [sermakarevich/sddw](https://github.com/sermakarevich/sddw).
+> The original project history, author attribution, and MIT license are preserved.
+> This fork is independently maintained at [yildizib/sddw](https://github.com/yildizib/sddw)
+> and adds an isolated platform-independent core with Claude Code and OpenCode adapters.
+>
+> This fork is not the upstream repository and is not affiliated with the original
+> maintainers unless explicitly stated. Original project links and branding are
+> retained for attribution.
+
 Platform-independent Spec-Driven Development Workflow with adapters for
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and OpenCode.
 

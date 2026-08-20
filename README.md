@@ -7,7 +7,8 @@
 [![X (Twitter)](https://img.shields.io/badge/X-@SDDWorkflows-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/SDDWorkflows)
 [![Slides](https://img.shields.io/badge/Slides-SDD%20Workflow-FBBC04?style=for-the-badge&logo=googleslides&logoColor=white)](https://docs.google.com/presentation/d/1SjKXF7hkoqyiN9-3tBGY4PDGvS3iqVyovDlJC_hYvMA/edit?usp=sharing)
 
-Spec-Driven Development Workflow for [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
+Platform-independent Spec-Driven Development Workflow with adapters for
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) and OpenCode.
 
 - Write **requirements**, optionally **analyse the codebase**, then **design** architecture, then **taskify** (as hybrid task files referencing `design.md`), then **implement** each task separately, then **verify** the result, then **self-improve** the workflow
 - The agent guides you through every step — researches, proposes options, confirms your decisions
@@ -15,6 +16,10 @@ Spec-Driven Development Workflow for [Claude Code](https://docs.anthropic.com/en
 - `/clear` context between steps — each step works within a focused context window
 - Two interaction modes: guided dialog (default) or fully `--auto`
 - Lightweight and easily customizable — just markdown files, no runtime dependencies
+
+The workflow core is isolated from platform integrations. Claude and OpenCode
+adapters provide only command syntax, tool mappings, and installation. A new
+platform can be added under `adapters/` without changing the core workflow.
 
 ## Why
 
@@ -29,6 +34,28 @@ Detailed specifications reduce AI code errors by up to 50% (Piskala, 2026), secu
 ```bash
 git clone https://github.com/sermakarevich/sddw.git ~/.claude/sddw
 cd ~/.claude/sddw && bash bin/install.sh
+```
+
+### OpenCode
+
+Install the OpenCode adapter globally:
+
+```bash
+git clone https://github.com/sermakarevich/sddw.git ~/.config/opencode/sddw
+cd ~/.config/opencode/sddw && bash adapters/opencode/install.sh
+```
+
+For local development, install the shared core and commands from a checkout:
+
+```bash
+git clone https://github.com/sermakarevich/sddw.git
+cd sddw && bash adapters/opencode/install.sh --local
+```
+
+To install OpenCode command wrappers into a specific project:
+
+```bash
+bash adapters/opencode/install.sh --local --project /path/to/project
 ```
 
 For development (symlink from local repo):
@@ -239,20 +266,22 @@ Each step is assembled from four modular components:
 
 | Component | Purpose | Folder |
 |-----------|---------|--------|
-| **Command** | Thin entry point with frontmatter + `@references` | `commands/` |
-| **Instructions** | Process rules — what to do, in what order | `instructions/` |
-| **Questionnaire** | Dialog guidance — how to interact with the user | `questionnaires/` |
-| **Specs** | Output format templates — what to produce | `specs/` |
+| **Command** | Thin platform entry point with frontmatter and core references | `adapters/<platform>/commands/` |
+| **Claude adapter** | Claude command wrappers, bridge, and installer | `adapters/claude/` |
+| **OpenCode adapter** | OpenCode command wrappers, bridge, and installer | `adapters/opencode/` |
+| **Instructions** | Process rules — what to do, in what order | `core/instructions/` |
+| **Questionnaire** | Platform-neutral dialog guidance | `core/questionnaires/` |
+| **Specs** | Output format templates — what to produce | `core/specs/` |
 
 A command wires these together:
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│ commands/<step>.md                                       │
+│ adapters/<platform>/commands/<step>.md                    │
 │                                                          │
-│  @instructions/<step>.md        ← process rules          │
-│  @questionnaires/<step>.md      ← dialog flow            │
-│  @specs/<step>.md               ← output format          │
+│  core/instructions/<step>.md    ← process rules           │
+│  core/questionnaires/<step>.md  ← dialog flow             │
+│  core/specs/<step>.md           ← output format           │
 │                                                          │
 │  reads:  .sddw/<feature>/<previous_step>.md  ← input     │
 │  writes: .sddw/<feature>/<current_step>.md   ← output    │

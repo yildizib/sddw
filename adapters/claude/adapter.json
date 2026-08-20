@@ -1,0 +1,12 @@
+{
+  "id": "claude",
+  "name": "Claude Code",
+  "contractVersion": "1.0",
+  "corePath": "../../core",
+  "commandPrefix": "sddw:",
+  "capabilities": {
+    "structuredQuestions": true,
+    "multipleSelections": true,
+    "contextReset": true
+  }
+}

@@ -40,14 +40,11 @@ jobs:
         shell: bash
         run: |
           PACKAGE_NAME="sddw-${RELEASE_TAG}"
-          git archive --format=tar --prefix="${PACKAGE_NAME}/" "$RELEASE_TAG" | tar -xf -
-
-          # The repository keeps this symlink for Claude compatibility. Replace
-          # it in the distribution tree so ZIP consumers receive real files.
-          rm -f "${PACKAGE_NAME}/commands"
-          cp -R "${PACKAGE_NAME}/adapters/claude/commands" "${PACKAGE_NAME}/commands"
-
-          zip -qr "${PACKAGE_NAME}.zip" "$PACKAGE_NAME"
+          git archive \
+            --format=zip \
+            --prefix="${PACKAGE_NAME}/" \
+            --output="${PACKAGE_NAME}.zip" \
+            "$RELEASE_TAG"
 
           test -s "${PACKAGE_NAME}.zip"
           unzip -l "${PACKAGE_NAME}.zip"

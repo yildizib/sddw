@@ -1,6 +1,0 @@
-{
-  "name": "sddw",
-  "version": "0.1.0",
-  "description": "Spec-Driven Development Workflow with a platform-independent core and Claude Code adapter. Specifications are the source of truth, code is a verified artifact.",
-  "author": { "name": "Sergii", "email": "sermakarevich@gmail.com" }
-}

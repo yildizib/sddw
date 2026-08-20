@@ -5,6 +5,11 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to package, for example v1.0.0"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -13,30 +18,33 @@ jobs:
   release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
 
     steps:
       - name: Check out the tagged revision
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Validate release tag
         shell: bash
         run: |
-          if [[ ! "$GITHUB_REF_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Invalid release tag: $GITHUB_REF_NAME"
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid release tag: $RELEASE_TAG"
             exit 1
           fi
 
       - name: Build distribution package
         shell: bash
         run: |
-          PACKAGE_NAME="sddw-${GITHUB_REF_NAME}"
+          PACKAGE_NAME="sddw-${RELEASE_TAG}"
           git archive \
             --format=zip \
             --prefix="${PACKAGE_NAME}/" \
             --output="${PACKAGE_NAME}.zip" \
-            "$GITHUB_REF_NAME"
+            "$RELEASE_TAG"
 
           test -s "${PACKAGE_NAME}.zip"
           unzip -l "${PACKAGE_NAME}.zip"
@@ -46,9 +54,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          PACKAGE_NAME="sddw-${GITHUB_REF_NAME}"
-          gh release create "$GITHUB_REF_NAME" \
+          PACKAGE_NAME="sddw-${RELEASE_TAG}"
+          gh release create "$RELEASE_TAG" \
             "${PACKAGE_NAME}.zip" \
             --repo "$GITHUB_REPOSITORY" \
-            --title "$GITHUB_REF_NAME" \
+            --title "$RELEASE_TAG" \
             --generate-notes

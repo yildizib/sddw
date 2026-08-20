@@ -21,6 +21,9 @@ The workflow core is isolated from platform integrations. Claude and OpenCode
 adapters provide only command syntax, tool mappings, and installation. A new
 platform can be added under `adapters/` without changing the core workflow.
 
+Platform support is installed through the adapter installers. Native Claude
+plugin metadata is not required.
+
 ## Why
 
 The standard way to use AI coding agents is short, interactive prompts: describe what you want, get code, fix it, repeat. This works for small tasks but breaks down for anything non-trivial — context gets lost between sessions, architectural decisions live only in chat history, and there's no artifact a teammate can review before code is written.
@@ -32,7 +35,7 @@ Detailed specifications reduce AI code errors by up to 50% (Piskala, 2026), secu
 ## Install
 
 ```bash
-git clone https://github.com/sermakarevich/sddw.git ~/.claude/sddw
+git clone https://github.com/yildizib/sddw.git ~/.claude/sddw
 cd ~/.claude/sddw && bash bin/install.sh
 ```
 
@@ -41,14 +44,14 @@ cd ~/.claude/sddw && bash bin/install.sh
 Install the OpenCode adapter globally:
 
 ```bash
-git clone https://github.com/sermakarevich/sddw.git ~/.config/opencode/sddw
+git clone https://github.com/yildizib/sddw.git ~/.config/opencode/sddw
 cd ~/.config/opencode/sddw && bash adapters/opencode/install.sh
 ```
 
 For local development, install the shared core and commands from a checkout:
 
 ```bash
-git clone https://github.com/sermakarevich/sddw.git
+git clone https://github.com/yildizib/sddw.git
 cd sddw && bash adapters/opencode/install.sh --local
 ```
 
@@ -61,7 +64,7 @@ bash adapters/opencode/install.sh --local --project /path/to/project
 For development (symlink from local repo):
 
 ```bash
-git clone https://github.com/sermakarevich/sddw.git
+git clone https://github.com/yildizib/sddw.git
 cd sddw && bash bin/install.sh --local
 ```
 

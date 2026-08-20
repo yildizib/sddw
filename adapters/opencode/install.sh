@@ -4,7 +4,8 @@ set -euo pipefail
 OPENCODE_DIR="$HOME/.config/opencode"
 SDDW_DIR="$OPENCODE_DIR/sddw"
 COMMANDS_DIR="$OPENCODE_DIR/commands"
-REPO_URL="https://github.com/sermakarevich/sddw.git"
+REPO_URL="https://github.com/yildizib/sddw.git"
+SOURCE_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 LOCAL=false
 PROJECT_DIR=""
 
@@ -39,8 +40,13 @@ while [ "$#" -gt 0 ]; do
     esac
 done
 
+if [ -n "$PROJECT_DIR" ] && [ "$PROJECT_DIR" = "$SOURCE_ROOT" ]; then
+    echo "Refusing to install project-local commands into the sddw repository root." >&2
+    echo "Pass the path of the project that will use sddw instead." >&2
+    exit 1
+fi
+
 if [ "$LOCAL" = true ]; then
-    SRC_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
     if [ -L "$SDDW_DIR" ]; then
         rm "$SDDW_DIR"
     elif [ -e "$SDDW_DIR" ]; then
@@ -48,7 +54,7 @@ if [ "$LOCAL" = true ]; then
         exit 1
     fi
     mkdir -p "$OPENCODE_DIR"
-    ln -s "$SRC_DIR" "$SDDW_DIR"
+    ln -s "$SOURCE_ROOT" "$SDDW_DIR"
 else
     if [ -d "$SDDW_DIR/.git" ]; then
         git -C "$SDDW_DIR" pull --ff-only origin main

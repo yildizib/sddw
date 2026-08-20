@@ -4,7 +4,7 @@ set -euo pipefail
 CLAUDE_DIR="$HOME/.claude"
 SDDW_DIR="$CLAUDE_DIR/sddw"
 COMMANDS_DIR="$CLAUDE_DIR/commands/sddw"
-REPO_URL="https://github.com/sermakarevich/sddw.git"
+REPO_URL="https://github.com/yildizib/sddw.git"
 LOCAL=false
 
 for arg in "$@"; do

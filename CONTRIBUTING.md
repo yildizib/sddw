@@ -397,9 +397,12 @@ The first release of this repository is `v1.0.0`.
 For the first release, confirm that `v1.0.0` does not already exist:
 
 ```bash
-git fetch --tags origin
-git tag --list "v1.0.0"
+REPOSITORY=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
+gh api "repos/${REPOSITORY}/git/ref/tags/v1.0.0" --jq '.ref'
 ```
+
+The command should return `404 Not Found` when the tag does not exist. Do not
+continue if the tag already exists.
 
 Prepare and review the release on `develop`. For a release that needs no
 release-only changes, open a release pull request directly:
@@ -409,20 +412,33 @@ gh pr create --base main --head develop --title "Release v1.0.0" --body "## Rele
 ```
 
 After the release pull request is approved and merged, create the annotated
-tag on the updated `main` branch:
+tag on the updated `main` commit with GitHub CLI:
 
 ```bash
-git switch main
-git pull --ff-only origin main
-
-git tag -a v1.0.0 -m "Release v1.0.0"
-git push origin v1.0.0
+REPOSITORY=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
+MAIN_SHA=$(gh api "repos/${REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+TAG_SHA=$(gh api --method POST "repos/${REPOSITORY}/git/tags" -f tag='v1.0.0' -f message='Release v1.0.0' -f object="$MAIN_SHA" -f type='commit' --jq '.sha')
+gh api --method POST "repos/${REPOSITORY}/git/refs" -f ref='refs/tags/v1.0.0' -f sha="$TAG_SHA" --jq '.ref'
 ```
 
-Create the GitHub Release from the tag:
+The tag push triggers the `Release` GitHub Actions workflow. Do not run
+`gh release create` manually for this tag, because the workflow creates the
+release and uploads the distribution package automatically.
+
+The `Release` GitHub Actions workflow creates the GitHub Release automatically
+when the `v1.0.0` tag is pushed. It also builds and uploads the following
+distribution asset:
+
+```text
+sddw-v1.0.0.zip
+```
+
+The package contains the tracked repository files from the tagged revision
+under a versioned top-level directory. Verify the workflow run and the release
+asset after the tag is pushed:
 
 ```bash
-gh release create v1.0.0 --title "v1.0.0" --generate-notes --verify-tag
+gh run list --workflow release.yml --limit 5
 ```
 
 The tag must point to the merge result on `main`, not to an earlier commit on

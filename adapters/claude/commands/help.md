@@ -1,0 +1,13 @@
+---
+name: sddw:help
+description: Show sddw workflow overview, list features, and check feature status
+argument-hint: "[list | status <feature-name>]"
+---
+
+<subcommand> #$ARGUMENTS </subcommand>
+
+# COMMON RULES
+@~/.claude/sddw/core/instructions/common.md
+
+# INSTRUCTIONS
+@~/.claude/sddw/core/instructions/help.md

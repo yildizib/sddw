@@ -37,6 +37,10 @@ if grep -R -F 'adapters/claude' "$ROOT_DIR/adapters/opencode" >/dev/null 2>&1; t
     fail "OpenCode adapter references Claude"
 fi
 
+if grep -R -F '@~/.config/opencode/sddw/bridge.md' "$ROOT_DIR/adapters/opencode" >/dev/null 2>&1; then
+    fail "OpenCode adapter references the stale bridge path"
+fi
+
 claude_steps=(
     chat code-analysis design design_and_taskify help implement requirements self-improve taskify verify
 )
@@ -52,6 +56,18 @@ opencode_steps=(
 for step in "${opencode_steps[@]}"; do
     if [ ! -f "$ROOT_DIR/adapters/opencode/commands/sddw-$step.md" ]; then
         fail "OpenCode command is missing: sddw-$step"
+    fi
+done
+
+for command in "$ROOT_DIR"/adapters/claude/commands/*.md; do
+    if ! grep -q -F '@~/.claude/sddw/adapters/claude/bridge.md' "$command"; then
+        fail "Claude command does not load its bridge: $(basename "$command")"
+    fi
+done
+
+for command in "$ROOT_DIR"/adapters/opencode/commands/*.md; do
+    if ! grep -q -F '@~/.config/opencode/sddw/adapters/opencode/bridge.md' "$command"; then
+        fail "OpenCode command does not load its bridge: $(basename "$command")"
     fi
 done
 

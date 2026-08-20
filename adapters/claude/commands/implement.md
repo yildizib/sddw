@@ -6,6 +6,9 @@ argument-hint: "<feature-name> [--task <task-number>] [--auto]"
 
 <feature_name> #$ARGUMENTS </feature_name>
 
+# ADAPTER BRIDGE
+@~/.claude/sddw/adapters/claude/bridge.md
+
 # COMMON RULES
 @~/.claude/sddw/core/instructions/common.md
 

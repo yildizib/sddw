@@ -70,6 +70,18 @@ To install OpenCode command wrappers into a specific project:
 bash adapters/opencode/install.sh --local --project /path/to/project
 ```
 
+Run an installed OpenCode command from the project directory:
+
+```bash
+opencode run --auto --command sddw-help
+opencode run --auto --command sddw-requirements -- \
+  "--auto feature-name Describe the feature to specify"
+```
+
+OpenCode's CLI `--auto` flag approves tool permissions. The second `--auto`,
+inside the command message after `--`, enables the sddw workflow's autonomous
+mode.
+
 For development (symlink from local repo):
 
 ```bash

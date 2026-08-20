@@ -10,4 +10,17 @@ This file maps the platform-independent core interaction contract to Claude Code
 - Core files are loaded from `~/.claude/sddw/core/`.
 - Claude command names use the `/sddw:<step>` format.
 
+## Command Map
+
+- Requirements: `/sddw:requirements`
+- Code Analysis: `/sddw:code-analysis`
+- Design: `/sddw:design`
+- Taskify: `/sddw:taskify`
+- Design and Taskify: `/sddw:design_and_taskify`
+- Implement: `/sddw:implement`
+- Verify: `/sddw:verify`
+- Self-Improve: `/sddw:self-improve`
+- Chat: `/sddw:chat`
+- Help: `/sddw:help`
+
 These mappings belong to the Claude adapter and must not be copied into core files.

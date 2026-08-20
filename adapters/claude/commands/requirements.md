@@ -8,6 +8,9 @@ argument-hint: "<feature-name> [--auto]"
 
 If no feature name is provided, ask the user to describe the feature they want to build.
 
+# ADAPTER BRIDGE
+@~/.claude/sddw/adapters/claude/bridge.md
+
 # COMMON RULES
 @~/.claude/sddw/core/instructions/common.md
 

@@ -6,6 +6,9 @@ argument-hint: "[list | status <feature-name>]"
 
 <subcommand> #$ARGUMENTS </subcommand>
 
+# ADAPTER BRIDGE
+@~/.claude/sddw/adapters/claude/bridge.md
+
 # COMMON RULES
 @~/.claude/sddw/core/instructions/common.md
 

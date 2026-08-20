@@ -7,7 +7,7 @@ Feature and arguments: $ARGUMENTS
 
 Read and follow these files in order:
 
-@~/.config/opencode/sddw/bridge.md
+@~/.config/opencode/sddw/adapters/opencode/bridge.md
 @~/.config/opencode/sddw/core/interaction.md
 @~/.config/opencode/sddw/core/instructions/common.md
 @~/.config/opencode/sddw/core/instructions/code-analysis.md

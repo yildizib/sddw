@@ -1,0 +1,32 @@
+---
+name: sddw:requirements
+description: Generate requirements spec for a feature with user stories, functional requirements, acceptance criteria, and constraints
+argument-hint: "<feature-name> [--auto]"
+---
+
+<feature_name> #$ARGUMENTS </feature_name>
+
+If no feature name is provided, ask the user to describe the feature they want to build.
+
+# ADAPTER BRIDGE
+@~/.claude/sddw/adapters/claude/bridge.md
+
+# COMMON RULES
+@~/.claude/sddw/core/instructions/common.md
+
+# INSTRUCTIONS
+@~/.claude/sddw/core/instructions/requirements.md
+
+# QUESTIONNAIRE
+@~/.claude/sddw/core/questionnaires/requirements.md
+
+# SPECS
+@~/.claude/sddw/core/specs/requirements.md
+
+# NEXT STEP
+After the user approves the requirements, suggest:
+> Run `/clear` to free up context.
+> If you have an existing codebase, run `/sddw:code-analysis <feature-name>` to ground design decisions in the actual code.
+> Otherwise, go straight to `/sddw:design_and_taskify <feature-name>` (recommended default).
+> 
+> *Alternative for design review iteration:* Run `/sddw:design <feature-name>` to establish architecture, then `/sddw:taskify <feature-name>` to generate tasks.

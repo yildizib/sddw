@@ -48,6 +48,7 @@ jobs:
 
           test -s "${PACKAGE_NAME}.zip"
           unzip -l "${PACKAGE_NAME}.zip"
+          unzip -t "${PACKAGE_NAME}.zip"
 
       - name: Create GitHub Release and upload package
         env:

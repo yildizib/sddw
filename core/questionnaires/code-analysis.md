@@ -1,108 +1,38 @@
 # Code Analysis Questionnaire
 
-Three-phase dialog to gather enough context to produce the codebase analysis (code-analysis.md).
+Gather scope and review evidence one question at a time. In `--auto`, derive answers from approved requirements and repository evidence without inventing facts or approvals.
 
----
+## Preflight
 
-## Phase 1: Discover
+Present the exact requirements revision/hash, approval, absolute project root, baseline SHA, and manifest freshness. If any value is invalid, ask at most one resolution question and otherwise stop blocked.
 
-*In `--auto`: perform discovery fully autonomously.*
+## Discover
 
-Understand which parts of the codebase matter most for the upcoming design. The requirements spec is already written — now understand the landscape. One question at a time.
+Ask one question, wait, and then choose the next based on the answer:
 
-**Step 1 — Open:**
-> "I've read the requirements. Before I scan the codebase, are there specific areas or modules you want me to focus on?"
+- Which module or behavior deserves the deepest scan?
+- Should any path be excluded, and why?
+- Is there a known convention, integration boundary, or technical-debt area to investigate?
+- Is there a relevant flow, interface, or test suite whose behavior is easy to misunderstand?
 
-Wait for response.
+Do not turn this list into a multi-part prompt.
 
-**Step 2+** — Follow up based on their answer. Pick ONE at a time:
-- **Scope** — "Should I focus on [directory/module] or scan more broadly?"
-- **Conventions** — "Any conventions or patterns I should watch for specifically?"
-- **Known issues** — "Any areas of the codebase that are tricky or have known technical debt?"
+## Scan and Propose
 
-**Context checklist** (background, not a script — weave naturally):
-- [ ] Key areas to focus on
-- [ ] Known conventions or patterns
-- [ ] Areas to avoid or known tech debt
-- [ ] Integration points relevant to the feature
+Record the full baseline SHA, scan time, tools, scanned paths, and skipped paths with reasons. Inspect patterns, interfaces, flows, dependency direction, conventions, policies, reusable components, and affected tests.
 
----
+Present one evidence category at a time as readable text. For each finding include:
 
-## Phase 2: Research & Propose
+- finding ID and statement;
+- `path:line`, symbol, command result, or immutable source;
+- observed fact versus inference;
+- confidence and rationale;
+- freshness relative to baseline and observation time.
 
-Scan the codebase and propose findings ONE section at a time. Wait for approval before moving to the next.
+After presenting one category, ask one correction/confirmation question. Continue with relevant patterns, interfaces and boundaries, existing flows, conventions/policies, tests, and unknowns. In `--auto`, record the evidence assessment without claiming user confirmation.
 
-### 2.1 Research
+## Generate
 
-- **Pattern scan** — identify architectural patterns, design patterns, code organisation
-- **Interface scan** — find key interfaces, module boundaries, public APIs
-- **Flow scan** — trace existing flows relevant to the feature
-- **Convention scan** — naming, structure, error handling, testing patterns
+Present one publication confirmation with baseline, scanned/skipped scope, finding counts by confidence, and unresolved unknowns. On confirmation, publish a new or regenerated analysis revision and update the feature manifest and run manifest.
 
-### 2.2 Propose (one section at a time)
-
-Present each section separately. Wait for user approval before proposing the next.
-
-**Output rule:** Always output the full findings as text FIRST. Then use `structured question mechanism` only for the approval question. Never put the findings list inside the `structured question mechanism` prompt — the user must be able to read the content before answering.
-
-*In `--auto`: decide all sections autonomously.*
-
-**Section 1 — Relevant Patterns:**
-Output as text:
-> "Here are the patterns I found relevant to this feature:"
-> - [Pattern]: [where used, how it works]
-
-Then ask: "Anything I missed or got wrong?"
-
-Wait for response. Lock in approved patterns.
-
-**Section 2 — Key Interfaces:**
-Output as text:
-> "Key interfaces and module boundaries:"
-> - [Interface/module]: [purpose, signature]
-
-Then ask: "Agree with these?"
-
-Wait for response. Lock in approved interfaces.
-
-**Section 3 — Existing Flows:**
-Output as text:
-> "Existing flows relevant to this feature:"
-> - [Flow name]: [step-by-step description]
-
-Then ask: "Accurate?"
-
-Wait for response. Lock in approved flows.
-
-**Section 4 — Conventions:**
-Output as text:
-> "Conventions the implementation should follow:"
-> - [Convention]: [description, files where enforced]
-
-Then ask: "Anything to add or correct?"
-
-Wait for response. Lock in approved conventions.
-
-### Rules for proposing:
-- SHALL propose ONE section at a time, wait for approval, then move to next
-- SHALL base findings on actual codebase scan, not assumptions
-- SHALL output full findings as text before calling structured question mechanism — never embed the list inside the question prompt
-- User can accept, modify, or provide their own findings for any section
-
----
-
-## Phase 3: Confirm & Generate
-
-Once all sections are approved:
-
-> "Ready to generate the code analysis? Here's what I'll write:"
-> - Relevant Patterns: [count] patterns
-> - Key Interfaces: [count] interfaces
-> - Existing Flows: [count] flows
-> - Conventions: [count] conventions
-
-User confirms → generate `code-analysis.md` to `.sddw/`
-
-*In `--auto`: generate directly.*
-
-If user wants changes → return to the relevant section in Phase 2.
+If an approved or baselined analysis would change, ask whether to initiate a change request; never offer direct editing or overwrite. A changed baseline marks affected findings stale and requires regeneration rather than silent carry-forward.

@@ -17,6 +17,9 @@ argument-hint: "<feature-name> [--auto]"
 # COMMON RULES
 @~/.claude/sddw/core/instructions/common.md
 
+# TRUST MODEL
+@~/.claude/sddw/core/security/trust-model.md
+
 # INSTRUCTIONS
 @~/.claude/sddw/core/instructions/design.md
 
@@ -24,7 +27,13 @@ argument-hint: "<feature-name> [--auto]"
 @~/.claude/sddw/core/questionnaires/design.md
 
 # SPECS
+@~/.claude/sddw/core/specs/requirements.md
 @~/.claude/sddw/core/specs/design.md
+@~/.claude/sddw/core/specs/decision-record.md
+@~/.claude/sddw/core/specs/risk-register.md
+@~/.claude/sddw/core/specs/feature-manifest.md
+@~/.claude/sddw/core/specs/traceability-matrix.md
+@~/.claude/sddw/core/specs/run-manifest.md
 
 # NEXT STEP
 After the user approves the design, suggest:

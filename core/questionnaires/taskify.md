@@ -1,50 +1,40 @@
 # Taskify Questionnaire
 
-Three-phase dialog scoped to task breakdown.
+Create a complete executable task graph one question at a time. In `--auto`, infer conservative defaults but never approve gates, waivers, or risks.
 
----
+## Preflight
 
-## Phase 1: Discover
+Present validated requirement, design, ADR, traceability, risk, quality-plan, code-analysis, manifest, and baseline revisions/hashes. If any required input is missing, stale, superseded, unapproved, or conflicting, stop with the single blocking reason.
 
-*In `--auto`: perform discovery fully autonomously.*
+If the manifest lists an approved remediation change request, present its exact revision/hash, immutable approval reference, impact, and proposal paths. Validate it before including those proposals in the task graph; do not consume draft, rejected, stale, or unverified requests.
 
-Understand task-breakdown preferences (granularity, parallelism).
+If an approved task set exists and no approved CR was loaded for this task-set revision, ask whether to initiate a change request. When a validated approved remediation CR is loaded, use it as the sole change authorization and do not require a second CR. Never offer direct mutation or overwrite.
 
-**Step 1 — Discovery:**
-Use `structured question mechanism` to ask an open question:
-> "I've read the requirements and design. Anything specific about how to break this into tasks? (e.g., granularity, parallel streams for multiple devs)"
+## Discover
 
-Wait for response.
+Ask one question about task granularity. Wait for the answer. If needed, ask one separate question about ownership or safe parallel streams. Do not combine preferences in one prompt.
 
----
+## Propose
 
-## Phase 2: Research & Propose
+Present the candidate graph as text before asking for a decision. Each row includes:
 
-*In `--auto`: perform research and propose task breakdown autonomously.*
+| Task ID | Outcome | Depends on | FR/NFR/AC | Design/ADR/Risk | Tests | Quality gates |
+|---|---|---|---|---|---|---|
+| TASK-001 | <outcome> | none | <IDs> | <IDs> | <obligations> | <QG IDs> |
 
-### 2.1 Research
-- **Codebase analysis:** scan relevant files for task context
-- **Dependency analysis:** analyze required dependencies (use `code-analysis.md` if present)
+Include concrete production/test paths, affected existing tests, task-specific contracts, acceptance criteria, and verifiable done criteria. Then ask one question about the breakdown. If sequencing needs adjustment, ask that as a later separate question.
 
-### 2.2 Propose Task Breakdown
+## Validate and Generate
 
-Present the proposed task breakdown. Use `structured question mechanism` to confirm.
+Before publication, report:
 
-> "I'd break this into N tasks:"
-> 1. [Task Title]
->    - Depends on: [none | task-N]
->    - Files: [files to create/modify, include test files marked "— update (interface change)" if interface changes]
-> 2. ...
->
-> "Does this breakdown look right?"
+- ID/reference validation;
+- missing FR/NFR/AC, test, design, risk, or quality links;
+- orphan tasks/test obligations;
+- missing dependencies;
+- DAG cycle result and topological order;
+- safe parallel groups.
 
-Wait for response. If user requests changes, refine and ask again.
+Ask one final generation confirmation. Stage all task files and lifecycle updates, then publish only if the complete set passes validation. On failure, publish no staged task changes and record recovery in the run manifest.
 
----
-
-## Phase 3: Confirm & Generate
-
-*In `--auto`: generate directly without confirming.*
-
-After user confirms the breakdown:
-Generate the task files at `.sddw/<feature-name>/design/tasks/task-<N>-<slug>.md` in the hybrid format.
+Update traceability, the feature manifest, and the run manifest with the task-set revision and exact hashes. Request formal human task-set approval and record its platform-verifiable reference. Regenerating approved/baselined tasks requires a change request and new revision.

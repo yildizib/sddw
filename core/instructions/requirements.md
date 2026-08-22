@@ -1,36 +1,63 @@
-# Requirements Step Instructions
+# Requirements Instructions
 
-Generate a requirements specification for a feature. This is Step 1 of the sddw workflow.
+Generate the requirements and initialize the governed lifecycle records for a feature.
 
 ## Goal
 
-Produce a precise, clear, and complete requirements spec.
+Produce an evidence-based requirements revision with stable trace IDs and a mandatory human approval gate.
 
 ## Process
 
-Follow the three-phase flow defined in the questionnaire, adapted to the interaction mode:
+Follow the questionnaire one question at a time:
 
-1. **Discover** — Ask the user to describe the feature. Follow the thread, challenge vagueness, make the abstract concrete. Gather enough context for Purpose, User Stories, and Constraints. *In `--auto`: perform discovery fully autonomously.*
+1. **Discover** - resolve the project root and baseline SHA, feature identity, issue and branch, users, outcomes, boundaries, quality expectations, sources, assumptions, and open questions. In `--auto`, investigate and draft autonomously.
+2. **Research and propose** - present one section at a time, distinguish evidence from assumptions, and obtain interactive feedback. In `--auto`, select draft content autonomously.
+3. **Generate and gate** - stage and validate the requirements and lifecycle records, publish the complete initial set, then request separate human approvals for the requirements revision and quality plan.
 
-2. **Research & Propose** — Based on discovery, research the problem space (web search, codebase analysis, domain knowledge). For each spec section, propose 2-3 ranked options with rationale. User accepts, modifies, or provides their own input. *In `--auto`: decide all sections autonomously.*
+## Initial Artifact Set
 
-3. **Confirm & Generate** — Summarise what will be written. User confirms. Write the spec to `.sddw/<feature-name>/requirements.md` following the spec template. *In `--auto`: generate directly.*
+For a new feature, create the feature directory and initialize these current-template artifacts together:
 
-## Rules
+- `requirements.md`
+- `feature-manifest.md`
+- `traceability-matrix.md`
+- `risk-register.md`
+- `quality/plan.md` as a draft discovered from repository policy, scripts, CI, and build/test configuration
+- `runs/run-<YYYYMMDDTHHMMSSZ>-requirements.md`
 
-- SHALL use RFC 2119 keywords (SHALL, SHOULD, MAY, SHALL NOT)
-- SHALL NOT include implementation details — that belongs in the design step
-- SHALL NOT include task decomposition — that belongs in the design step
-- Every FR SHALL be atomic, testable, and user-centric
-- Every FR SHALL have at least one acceptance criterion
-- Include explicit prohibitions (SHALL NOT) to prevent unwanted agent behaviour
-- SHALL NOT proceed to generation without user approval on all sections (interactive mode). `--auto` mode may proceed without approval.
+Record the absolute project root, full code baseline SHA, stable feature ID, artifact revisions, exact SHA-256 hashes, inputs, status, and actual run actions. Initialize trace rows and risks from the requirements, and leave unavailable downstream links as `pending` rather than inventing evidence.
 
-**Path note:** The requirements step is responsible for **creating** the `.sddw/` directory and the feature subdirectory if they do not exist.
+## Requirements Rules
+
+- SHALL use RFC 2119 keywords and SHALL NOT include implementation or task decomposition.
+- Assign immutable, unique IDs: `US-##`, `FR-##`, `NFR-##`, and `AC-<requirement-number>.<scenario-number>`.
+- Every story SHALL map to at least one FR or NFR; every FR/NFR SHALL have testable acceptance criteria.
+- Capture measurable quality attributes as NFRs, including applicable security, privacy, performance, accessibility, reliability, operability, compatibility, and compliance expectations.
+- Record each source with a resolvable reference and the claims it supports. Record assumptions with validation owner/status and open questions with owner, blocking status, and disposition.
+- Unresolved blocking questions SHALL keep requirements in `draft` or `in-review` and the lifecycle `blocked`.
+- Include explicit prohibitions to prevent unwanted behavior.
+- Validate internal ID uniqueness, references, trace coverage, risk ownership, and quality-plan provenance before publishing.
+
+## Approval and Revision
+
+- Requirements and quality-plan approval are mandatory human gates in every mode. `--auto` MAY research, decide draft content, and publish `in-review` revisions, but SHALL NOT approve them, impersonate an approver, or advance dependent work.
+- Record the platform-verifiable approval reference, named approver, decision, and ISO-8601 UTC time in the requirements, quality plan, traceability matrix, feature manifest, and run manifest.
+- If approval is pending or rejected, record the blocked result and stop before code analysis, design, or taskification.
+- SHALL NOT directly mutate an approved requirements revision. Create an approved change request, generate a new revision, recalculate hashes, invalidate dependent artifacts and approvals, and update traceability, risks, the feature manifest, and the run manifest.
+- SHALL NOT silently overwrite any lifecycle artifact or erase superseded IDs/history.
+
+## Clean Transition
+
+Current templates and lifecycle controls apply only to artifacts newly generated or regenerated by this run. Do not migrate unrelated existing features or rewrite unchanged legacy artifacts solely to adopt the new format.
 
 ## Output
 
+```text
+<resolved-sddw-path>/<feature-name>/
+|-- requirements.md
+|-- feature-manifest.md
+|-- traceability-matrix.md
+|-- risk-register.md
+|-- quality/plan.md
+`-- runs/run-<YYYYMMDDTHHMMSSZ>-requirements.md
 ```
-<resolved-sddw-path>/<feature-name>/requirements.md
-```
-

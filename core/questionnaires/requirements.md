@@ -1,140 +1,68 @@
 # Requirements Questionnaire
 
-Three-phase dialog to gather enough context to write the requirements spec.
+Gather and validate one requirements concern at a time. Never combine unanswered questions. In `--auto`, answer discovery questions from evidence where possible, record unsupported answers as assumptions or open questions, and never approve requirements.
 
----
+## Discover
 
-## Phase 1: Discover
+Ask these concerns naturally, one question at a time, waiting after each:
 
-*In `--auto`: perform discovery fully autonomously.*
+1. Resolve whether the target is the current directory or another project, then resolve it to an absolute project root and capture the full baseline SHA.
+2. Ask what problem the feature solves and who experiences it.
+3. Follow the user's emphasis, challenge vague terms, and request a concrete user journey.
+4. Clarify observable success, failure behavior, boundaries, prohibitions, and out-of-scope outcomes.
+5. Clarify measurable quality expectations and applicable security, privacy, performance, accessibility, reliability, operability, compatibility, and compliance constraints.
+6. Clarify testing expectations, issue/branch identity, risk owners, and any unresolved decision.
 
-Understand the feature and its context. One question at a time, follow the thread.
+For each claim, determine its source. Ask one source, assumption, or open-question clarification at a time when evidence is absent or contradictory.
 
-**Step 1 — Project location:**
-> "Where does this feature's code live? Is it the current directory, or a different project?"
+Before proposals, ensure the draft has enough information for:
 
-Use `structured question mechanism` with options: current directory (`.`) or "Other — I'll specify a path". Wait for response.
+- stable feature identity, absolute project root, issue, branch, and baseline SHA;
+- purpose and `US-##` user stories;
+- atomic `FR-##` behavior and measurable `NFR-##` quality attributes;
+- `AC-<requirement-number>.<scenario-number>` happy, failure, and boundary scenarios;
+- in-scope, out-of-scope, and prohibited behavior;
+- sources and supported claims;
+- assumptions with validation status/owner;
+- open questions with owner and blocking status;
+- initial risks and repository-derived quality gates.
 
-**Step 2 — Open:**
-> "Describe the feature you want to build. What problem does it solve?"
+## Research and Propose
 
-Wait for response.
+Research repository evidence, domain standards, security/compliance needs, and relevant external sources. Present findings as text before asking for a decision. Propose exactly one section or one unresolved decision at a time and wait for the response.
 
-**Step 3 — Follow up** on what they said. Pick ONE:
-- **Follow energy** — whatever they emphasized, dig into that
-- **Challenge vagueness** — "users" means who? "simple" means how? "fast" means what?
-- **Make abstract concrete** — "walk me through using this"
-- **Clarify ambiguity** — "when you say X, do you mean A or B?"
+Use this order unless the conversation makes another order clearer:
 
-Use `structured question mechanism` with 2-4 interpretations as options when possible.
+1. Purpose and source basis
+2. User stories with stable IDs
+3. Functional requirements with stable IDs and RFC 2119 language
+4. Non-functional requirements with stable IDs and measurable thresholds
+5. Acceptance criteria with stable IDs, one requirement at a time
+6. Scope, exclusions, and prohibitions
+7. Sources, assumptions, and open questions
+8. Risks, testing approach, and draft quality gates
 
-Wait for response.
+After each proposal, ask one approval or correction question. Mark accepted content as agreed draft content, not as lifecycle approval.
 
-**Step 4+** — Continue one question at a time until the context checklist is covered:
-- [ ] What the feature does (concrete enough to write Purpose)
-- [ ] Who uses it and why (enough for User Stories)
-- [ ] What should NOT happen (boundaries, prohibitions)
-- [ ] What "done" looks like (observable outcomes)
-- [ ] Testing approach (TDD, test-after, no tests — and why)
+## Generate and Approve
 
-Do NOT walk through this checklist in order. Weave questions naturally based on what's missing.
+Present one generation confirmation containing counts, blocking questions, key risks, and the artifact set to be initialized. On confirmation, stage and validate:
 
----
+- `requirements.md`
+- `feature-manifest.md`
+- `traceability-matrix.md`
+- `risk-register.md`
+- `quality/plan.md`
+- the requirements run manifest
 
-## Phase 2: Research & Propose
+Publish only after IDs, references, hashes, trace rows, risks, and ledger entries are internally consistent.
 
-Based on discovery, research the problem space and propose ONE section at a time. Wait for approval before moving to the next.
+Then ask the mandatory requirements gate question:
 
-### 2.1 Research
+> "Do you approve requirements revision [revision] with SHA-256 [hash] for downstream use?"
 
-Depending on the feature, research:
-- **Web search** — SOTA approaches, common patterns, existing solutions, relevant packages
-- **Codebase analysis** — existing implementations, conventions, patterns to follow or avoid
-- **Domain knowledge** — industry standards, security requirements, compliance needs
+Offer `Approve`, `Reject`, and `Request changes`. Record identity, decision, ISO-8601 UTC time, and a platform-verifiable approval reference. Free-text identity without that reference remains unverified.
 
-### 2.2 Propose (one section at a time)
+After requirements approval, ask one separate quality-plan gate question using the same options and evidence requirements. In `--auto`, do not ask on the user's behalf or choose either answer: leave both approvals `pending`, mark downstream work blocked, and report that human approvals are required.
 
-Present each section separately. Wait for user approval before proposing the next.
-
-*In `--auto`: decide all sections autonomously.*
-
-**Section 1 — Purpose:**
-Use `structured question mechanism` with options presenting 2 framings:
-- Option 1: [Framing A — focused on problem]
-- Option 2: [Framing B — focused on outcome]
-Question: "Which framing works better, or would you adjust?"
-
-Wait for response. Lock in approved Purpose.
-
-**Section 2 — User Stories:**
-> "I identified these user journeys:"
-> 1. [Story A] — [why this matters]
-> 2. [Story B] — [why this matters]
-> 3. [Story C] — [why this matters]
-> "Would you adjust, add, or remove any?"
-
-Wait for response. Lock in approved stories.
-
-**Section 3 — Functional Requirements:**
-> "Here are the functional requirements I'd suggest, ordered by priority:"
-> - FR-01: [requirement] (SHALL) — [rationale]
-> - FR-02: [requirement] (SHALL) — [rationale]
-> - FR-03: [requirement] (SHOULD) — [rationale]
-> - FR-04: [requirement] (SHALL NOT) — [rationale from research]
-> "Agree, or want to change priorities?"
-
-Wait for response. Lock in approved FRs.
-
-**Section 4 — Acceptance Criteria:**
-> "For FR-01, I'd test these scenarios:"
-> - Happy path: [Given/When/Then]
-> - Failure path: [Given/When/Then]
-> - Edge case: [Given/When/Then]
-> "Missing any scenarios?"
-
-Wait for response. Repeat for each FR, one at a time.
-
-**Section 5 — Constraints:**
-> "Based on the codebase and your description, I'd set these boundaries:"
-> - In Scope: [list]
-> - Out of Scope: [list with reasoning]
-> - Prohibitions: [list with reasoning]
-> "Anything to add or move?"
-
-Wait for response. Lock in approved constraints.
-
-**Section 6 — Testing Approach:**
-Use `structured question mechanism` with options:
-- **TDD (Recommended)** — write failing tests first, then implement to pass
-- **Test-after** — implement first, add tests after
-- **Selective TDD** — TDD for business logic/APIs, skip for config/glue code
-- **No tests** — skip testing (e.g., prototype, spike)
-Question: "How do you want to handle testing for this feature?"
-
-Wait for response. Lock in testing approach — this carries through to the implement step.
-
-### Rules for proposing:
-- SHALL propose ONE section at a time, wait for approval, then move to next
-- SHALL present options sorted by relevance, strongest first
-- SHALL include rationale for each option (from research or codebase analysis)
-- SHALL explicitly mark what came from research vs assumption
-- User can accept, modify, or propose their own input for any section
-
----
-
-## Phase 3: Confirm & Generate
-
-Once all sections are approved:
-
-> "Ready to generate the requirements spec? Here's what I'll write:"
-> - Purpose: [summary]
-> - User Stories: [count] stories
-> - Functional Requirements: [count] FRs
-> - Acceptance Criteria: [count] scenarios
-> - Constraints: [in/out/prohibitions summary]
-
-User confirms → generate spec to `.sddw/<feature-name>/requirements.md`
-
-*In `--auto`: generate directly.*
-
-If user wants changes → return to the relevant section in Phase 2.
+Requested changes to an approved revision require a change request and a new revision; never edit the approved artifact directly.

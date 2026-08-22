@@ -1,51 +1,47 @@
-# Design Step Instructions
+# Design Instructions
 
-Generate the cross-cutting design artefact — `design.md` — for a feature. This is Step 3 of the sddw split flow (or part of Step 3 in the combined `the combined Design and Taskify step`). Produces ONLY `design.md`; task files come from `the Taskify step`.
-
-## Goal
-
-Produce `design.md` — the shared architecture, data models, interface contracts, and design decisions that all tasks reference. This file is the single source of truth for cross-cutting design context.
+Generate the governed cross-cutting design revision for a feature. Task decomposition is handled separately.
 
 ## Prerequisites
 
-Read the requirements spec:
-`<resolved-sddw-path>/<feature-name>/requirements.md`
-
-If the requirements spec does not exist, inform the user and suggest starting the Requirements step for this feature first.
-
-Check if `<resolved-sddw-path>/code-analysis.md` exists. If it does, read it and use it to ground design decisions. If it does not exist, that is fine — perform lightweight codebase scanning as needed.
-
-Check if `<resolved-sddw-path>/<feature-name>/design/design.md` already exists:
-- **Interactive mode:** use `structured question mechanism` with options `Overwrite` / `Edit existing` / `Abort` before writing
-- **`--auto` mode:** refuse with message "design.md already exists at <path>; re-run interactively or delete it first"
+- Load `feature-manifest.md` and verify the exact requirements revision and hash.
+- Requirements SHALL be human-approved, current, complete enough to design, and tied to the current baseline. Validate the requirements approval and manifest freshness; any stale, missing, superseded, or conflicting input blocks design.
+- If code analysis is listed, validate its revision, hash, baseline, evidence freshness, and applicability. Otherwise perform and record targeted code scanning.
+- Create the design run manifest before material work and record all inputs.
 
 ## Process
 
-Follow the three-phase flow defined in the questionnaire:
+1. **Discover** - ask one question at a time about architecture, integration, migration, compatibility, operations, and constraints. In `--auto`, draft autonomously from valid evidence.
+2. **Research and propose** - present one concern at a time with evidence, ranked alternatives, consequences, and unresolved risks.
+3. **Generate, validate, and gate** - stage the design revision, validate traceability and lifecycle concerns, publish it as `in-review`, then request human approval and update traceability, risk, feature, and run records.
 
-1. **Discover** — Ask the user about preferred approaches, constraints, and integration concerns. The requirements spec provides the "what" — now understand the user's preferences for "how". *In `--auto`: perform discovery fully autonomously.*
+## Design Rules
 
-2. **Research & Propose** — For each design concern (architecture, data models, interface contracts, design decisions), propose ranked options with rationale. User accepts, modifies, or provides their own approach. *In `--auto`: decide all sections autonomously.*
+- Assign stable IDs to design elements, including components, data models, interfaces, flows, and controls. Use explicit IDs such as `DES-###`; use `ADR-###` for non-obvious decisions and `RISK-###` for risks.
+- Every design element SHALL trace to one or more approved FR/NFR/AC IDs or an approved change request. Every FR/NFR SHALL map to design or an explicit `not-needed: <reason>` disposition.
+- Document architecture, data models, interfaces, dependency direction, trust boundaries, and affected tests using actual codebase evidence.
+- Include applicable ADRs, risks and mitigations, migration and data-conversion strategy, backward/forward compatibility, rollback/forward-fix strategy, and observability signals, thresholds, ownership, and response.
+- Record rejected alternatives and rationale. SHALL NOT introduce patterns that conflict with repository policy or evidenced conventions.
+- Update `traceability-matrix.md`, `risk-register.md`, `feature-manifest.md`, and the run manifest with exact revision/hash links and actual outcomes.
+- Validate complete requirement-to-design trace links, resolvable references, risks, compatibility, migration, rollback, and observability before success.
+- SHALL NOT generate task files.
 
-3. **Confirm & Generate** — Summarise what will be written. User confirms. Generate `design.md` following the spec template. *In `--auto`: generate directly.*
+## Existing Design and Revision
 
-## Rules
+- SHALL NOT overwrite or directly mutate an approved or baselined design.
+- A design change requires a change request and a new revision. Recalculate hashes, preserve superseded history, mark affected downstream artifacts and approvals stale, and record invalidation in the manifest and traceability matrix.
+- An existing draft may be regenerated only with explicit interactive confirmation or a recorded `--auto` regeneration intent; regeneration creates a revision and never erases history.
+- `--auto` may draft or regenerate but cannot approve an ADR risk acceptance, waiver, or mandatory human gate.
+- Design and applicable ADR approval are mandatory human gates. Record a platform-verifiable approval reference, approver, decision, and time; pending approval blocks Taskify.
 
-- SHALL read and reference the requirements spec — every design element traces to an FR
-- SHALL use the Project path from the requirements spec as the target codebase for analysis
-- SHALL use `.sddw/code-analysis.md` if it exists, but SHALL NOT require it
-- SHALL analyse the actual codebase if code-analysis is absent
-- Every design element SHALL trace to one or more FR-IDs
-- Every FR SHALL appear in at least one design element
-- SHALL NOT generate task files — task decomposition is the responsibility of `the Taskify step`
-- SHALL NOT introduce patterns that conflict with existing codebase conventions
-- SHALL document non-obvious decisions with rationale and rejected alternatives
-- SHALL NOT proceed to generation without user approval (interactive mode). `--auto` mode may proceed without approval.
-- SHALL NOT silently overwrite an existing `design.md` — see Prerequisites above
+## Clean Transition
+
+Use current design and lifecycle formats only for newly generated or regenerated feature artifacts. Do not migrate unchanged legacy artifacts.
 
 ## Output
 
-```
-.sddw/<feature-name>/design/
-└── design.md
+```text
+<resolved-sddw-path>/<feature-name>/design/design.md
+<resolved-sddw-path>/<feature-name>/decisions/ADR-<NNN>-<slug>.md
+<resolved-sddw-path>/<feature-name>/runs/run-<YYYYMMDDTHHMMSSZ>-design.md
 ```

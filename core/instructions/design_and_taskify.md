@@ -1,55 +1,50 @@
-# Design and Taskify Step Instructions
+# Design and Taskify Instructions
 
-Generate the cross-cutting `design.md` plus hybrid task files for a feature in a single combined dialog. Step 3 of the sddw workflow when the user wants the simple one-shot path. End artefacts are structurally equivalent to running `the Design step` then `the Taskify step`.
-
-## Goal
-
-Produce both `design.md` (the shared architecture, data models, interface contracts, and design decisions) and the hybrid task files (`task-<N>-<slug>.md`) that reference it. This command provides a single monolithic flow for smaller features where design and task decomposition can be approved together.
+Generate a design revision and task-set revision in one atomic lifecycle operation. The published artifacts SHALL be equivalent to successful separate Design and Taskify runs.
 
 ## Prerequisites
 
-Read the requirements spec:
-`<resolved-sddw-path>/<feature-name>/requirements.md`
+Load the feature manifest and validate the exact human-approved requirements revision/hash, current baseline, traceability, risks, quality-plan draft, and applicable code analysis. Missing, stale, superseded, unapproved, or conflicting inputs block the operation.
 
-If the requirements spec does not exist, inform the user and suggest starting the Requirements step for this feature first (fail-soft).
-
-Check if `<resolved-sddw-path>/code-analysis.md` exists. If it does, read it and use it to ground design decisions. If it does not exist, that is fine — perform lightweight codebase scanning as needed.
-
-Check if `<resolved-sddw-path>/<feature-name>/design/design.md` already exists:
-- **Interactive mode:** use `structured question mechanism` with options `Overwrite` / `Edit existing` / `Abort` before proceeding.
-- **`--auto` mode:** refuse with message "design.md already exists at <path>; re-run interactively or delete it first"
+Create one run manifest before material work and record every input revision/hash.
 
 ## Process
 
-Follow the monolithic 3-phase flow defined in the questionnaire (`questionnaires/design_and_taskify.md`):
+1. **Discover** - ask one question at a time about architecture, integration, migration, compatibility, operability, task granularity, and parallelism. In `--auto`, draft autonomously from valid evidence.
+2. **Research and propose** - present design concerns and then the derived task graph one concern at a time, with alternatives, evidence, trace IDs, risks, and consequences.
+3. **Stage, validate, publish, and gate** - stage the design, ADRs, task set, and all ledger changes; validate the complete staged state; publish the complete `in-review` set atomically; request human design/ADR and task-set approvals.
 
-1. **Discover** — Ask the user about preferred architectural approaches and task-breakdown preferences (granularity, parallelism) in one go. *In `--auto`: perform discovery fully autonomously.*
-2. **Research & Propose** — For each design concern (architecture, data models, interface contracts, design decisions) AND the task breakdown, propose ranked options with rationale. User accepts, modifies, or provides their own approach. Each section is approved before moving to the next. *In `--auto`: decide all sections autonomously.*
-3. **Confirm & Generate** — Single confirmation for the entire set of proposals. Once confirmed, write `design.md` FIRST, then write the task files. *In `--auto`: generate directly.*
+## Design and Task Rules
 
-## Rules
+- Apply all Design rules: stable `DES-###` element IDs, `ADR-###` decisions, requirement/AC trace links, risks, migration, compatibility, rollback, and observability.
+- Apply all Taskify rules: stable `TASK-###` IDs, AC/test/quality links, concrete files, verifiable done criteria, explicit dependencies, and bidirectional traceability.
+- Validate that all approved FR/NFR/AC IDs have design and task/test coverage or an approved `not-needed`/`not-applicable` rationale.
+- Validate every reference, task dependency, and quality link; the task DAG SHALL contain no cycles and SHALL be topologically executable.
+- Update `traceability-matrix.md`, `risk-register.md`, `feature-manifest.md`, and the run manifest with exact revisions, hashes, inputs, invalidations, and outcomes.
 
-- SHALL produce artefacts structurally equivalent to running the split flow (`the Design step` then `the Taskify step`).
-- SHALL read and reference the requirements spec — every design element traces to an FR
-- SHALL use the Project path from the requirements spec as the target codebase for analysis
-- SHALL write `design.md` before any task files, ensuring `design.md` is preserved if task generation aborts mid-flow.
-- SHALL use `.sddw/code-analysis.md` if it exists, but SHALL NOT require it
-- SHALL analyse the actual codebase if code-analysis is absent
-- Every task SHALL trace to one or more FR-IDs
-- Every FR SHALL appear in at least one task
-- Tasks SHALL be dependency-ordered (independent first) with explicit `Depends on:` field
-- Tasks SHALL declare `Depends on:` for sequencing.
-- Tasks SHALL use the hybrid format from `specs/design-task.md`, referencing `design.md` for cross-cutting concerns.
-- SHALL NOT silently overwrite an existing `design.md` (see Prerequisites).
-- SHALL NOT proceed to generation without user approval in interactive mode. `--auto` mode may proceed without approval.
+## Atomic Publication
+
+- Stage outputs outside canonical paths or with an equivalent reversible mechanism.
+- Do not publish `design.md`, ADRs, tasks, or ledger changes until the entire staged set passes validation.
+- Publish only the complete design/task/trace/risk/manifest set. If validation or publication fails, restore the pre-run canonical state, leave no partial design or partial task set, and record changed state and recovery in the run manifest.
+- Success requires all canonical outputs and ledger hashes to agree. Writing `design.md` first and leaving it behind after task failure is prohibited.
+
+## Existing Artifacts and Revision
+
+- SHALL NOT overwrite or directly mutate approved or baselined artifacts. Changes require an approved change request and new design/task-set revisions, preserving superseded history and invalidating downstream approvals.
+- Existing drafts may be regenerated only with explicit interactive confirmation or recorded `--auto` regeneration intent; regeneration increments revisions.
+- `--auto` may draft and atomically publish draft revisions but cannot grant human approvals, risk acceptance, or waivers.
+- Design/ADR and task-set approvals are mandatory human gates. Record platform-verifiable approval references; pending approval blocks implementation.
+
+## Clean Transition
+
+Apply current formats only to artifacts newly generated or regenerated by this operation. Do not migrate unchanged legacy artifacts.
 
 ## Output
 
-```
-.sddw/<feature-name>/design/
-├── design.md
-└── tasks/
-    ├── task-1-<slug>.md
-    ├── task-2-<slug>.md
-    └── ...
+```text
+<resolved-sddw-path>/<feature-name>/design/design.md
+<resolved-sddw-path>/<feature-name>/decisions/ADR-<NNN>-<slug>.md
+<resolved-sddw-path>/<feature-name>/design/tasks/task-<N>-<slug>.md
+<resolved-sddw-path>/<feature-name>/runs/run-<YYYYMMDDTHHMMSSZ>-design-and-taskify.md
 ```

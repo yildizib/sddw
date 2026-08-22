@@ -6,7 +6,7 @@ Three-phase dialog for executing a single task from the design spec.
 
 ## Phase 1: Discover
 
-*In `--auto`: perform discovery fully autonomously.*
+*In `--auto`: perform non-gated discovery autonomously. Stop for common.md human gates.*
 
 Understand which task to execute and any blockers. One question at a time.
 
@@ -22,7 +22,7 @@ Wait for response.
 
 If --task flag provided, check dependencies:
 > "Task [N]: [name]. Dependencies: [status of each]."
-> If blocked: use `structured question mechanism` with options "Yes — proceed anyway" / "No — pick a different task".
+> If blocked: describe the missing dependency and concrete risks, then use `structured question mechanism` with options "Accept the documented risk for this execution" / "No — pick a different task (Recommended)". Record any acceptance. In `--auto`, stop and request this decision.
 
 Wait for response.
 
@@ -39,6 +39,7 @@ Based on the task file, research implementation approach and propose a plan.
 
 ### 2.1 Research
 
+- **Preflight** — resolve project root, inspect repository conventions, branch and protection status, preserve worktree changes, validate dependencies, and record current artifact revisions
 - **Codebase scan** — check current state of files listed in the task (may have changed since design)
 - **Test patterns** — identify existing test conventions in the project
 - **Library docs** — if the task involves unfamiliar APIs or libraries, research usage patterns
@@ -55,7 +56,7 @@ Based on the task file, research implementation approach and propose a plan.
 
 Wait for response. User confirms → execute following the instructions.
 
-*In `--auto`: decide implementation approach autonomously, proceed to execution.*
+*In `--auto`: decide the non-gated implementation approach autonomously and proceed. Mandatory human gates still stop execution.*
 
 ---
 
@@ -65,9 +66,13 @@ After task completion:
 
 > "Task [N] complete:"
 > - Implemented: [what was done]
-> - Commit: [hash]
+> - Artifact revisions: [requirements/design/task/manifest revisions]
+> - Quality checks: [PASS | FAIL | PARTIAL | UNVERIFIED | WAIVED, with evidence]
+> - Commit: [not requested | pending authorization | hash if separately authorized]
 > - Deviations: [count by rule, or "none"]
 > - Done criteria: [all checked / issues]
+
+Write the completion report before any optional authorized commit. The report SHALL NOT require its own commit hash; later commit links belong in the manifest or pull request metadata.
 
 > If unblocked tasks remain:
 > "Next unblocked tasks: [list]."

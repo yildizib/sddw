@@ -19,12 +19,11 @@
 Platform-independent Spec-Driven Development Workflow with adapters for
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and OpenCode.
 
-- Write **requirements**, optionally **analyse the codebase**, then **design** architecture, then **taskify** (as hybrid task files referencing `design.md`), then **implement** each task separately, then **verify** the result, then **self-improve** by proposing evidence-based workflow diffs
-- The agent guides you through every step — researches, proposes options, confirms your decisions
-- Every step produces exactly one spec type. Every step reads specs from previous steps.
-- `/clear` context between steps — each step works within a focused context window
-- Two interaction modes: guided dialog (default) or fully `--auto`
-- Lightweight and easily customizable — just markdown files, no runtime dependencies
+- Govern work from **requirements** through **release and post-release evidence**, with optional code analysis, design, task planning, implementation, verification, independent review, and self-improvement
+- Persist a revisioned feature manifest, traceability, risks, quality gates, run evidence, review findings, release records, metrics, and change requests
+- Keep humans in control of scope, risk acceptance, waivers, destructive operations, remote side effects, and release sign-off; `--auto` cannot bypass these gates
+- Use guided dialog by default or `--auto` for non-gated analysis and drafting
+- Keep the workflow lightweight and customizable with Markdown artifacts and no runtime dependencies
 
 The workflow core is isolated from platform integrations. Claude and OpenCode
 adapters provide only command syntax, tool mappings, and installation. A new
@@ -123,12 +122,23 @@ new command definitions are loaded.
 
 ## Interaction Modes
 
-Every step supports two interaction modes:
+Lifecycle commands support two interaction modes:
 
 | Mode | Flag | Behavior |
 |------|------|----------|
-| **Interactive** | *(default)* | Full guided dialog — one question at a time, every section confirmed |
-| **Auto** | `--auto` | Fully autonomous — no questions, best-judgment decisions |
+| **Interactive** | *(default)* | Guided dialog, explicit decisions, and human confirmation at required gates |
+| **Auto** | `--auto` | Automates non-gated discovery, analysis, drafting, and local execution within granted permissions |
+
+`--auto` is not blanket authorization. It cannot accept requirements or material
+scope changes, accept security or production risk, approve a waiver, resolve a
+blocking review finding, use secrets, transfer non-public data, perform a
+destructive operation, or authorize remote Git, deployment, rollback, or
+release actions. A named human must approve each mandatory gate, and missing
+approval leaves the gate pending and blocks dependent work.
+
+Run lifecycle commands from the target project root. If the host adapter accepts
+additional arguments, `--project <path>` may identify that root explicitly;
+commands never search unrelated parent or Git directories for `.sddw/`.
 
 Claude Code uses the `/sddw:<step>` command format. OpenCode uses the
 equivalent `/sddw-<step>` command format. Both adapters use the same core
@@ -137,22 +147,30 @@ layout.
 
 ## Usage
 
-**Vibecoding** — `--auto`. The agent decides everything.
+Use the default mode when decisions should be developed interactively. Use
+`--auto` to reduce ceremony while preserving repository policy, evidence
+requirements, and mandatory human control points.
 
-**Agentic engineering** — default mode. You stay in control: review proposals, add missing context, ask questions, approve each spec section before it's written, and validate the output spec.
-
-## Steps
+## Governed Lifecycle
 
 1. **Requirements** — collaboratively produce a feature spec with user stories, FRs, and acceptance criteria
-2. **Code Analysis** *(optional)* — scan existing codebase for patterns, interfaces, and conventions
-3. **Design** — produce a cross-cutting `design.md` with architecture, models, and decisions
-4. **Taskify** — break the feature into hybrid task files referencing `design.md`
-5. **Implement** — execute one task at a time following TDD and commit protocols
-6. **Verify** — validate the implementation against requirements and acceptance criteria
-7. **Self-Improve** — analyse execution across all steps and propose workflow improvements
-- **Design & Taskify** — combined alias: run design and taskify in one shot (`/sddw:design_and_taskify`)
-- **Chat** — fast-track interaction with an existing feature: questions, edits, quick fixes
-- **Help** — workflow overview, list features, check feature status
+2. **Code Analysis** *(optional)* — inspect an existing codebase, its interfaces, and project conventions
+3. **Design** — define architecture, models, contracts, decisions, risks, and quality implications
+4. **Taskify** — create dependency-ordered task files tied to requirements and design revisions
+5. **Implement** — execute scoped tasks, record deviations and actual run evidence, and follow discovered repository policy
+6. **Verify** — evaluate every requirement, task, and required quality gate against current evidence
+7. **Independent Review** — review exact artifact revisions, code, tests, risks, and release/rollback readiness outside the implementer's chain of context
+8. **Release** — first prepare release readiness; after authorized humans perform the release, record deployment, smoke, monitoring, rollback, and final sign-off evidence
+9. **Self-Improve** — analyse lifecycle evidence and propose workflow changes without applying them automatically
+
+**Design & Taskify** (`/sddw:design_and_taskify`) is a combined command for
+running the Design and Taskify stages together. It produces the same governed
+artifacts and does not skip approvals or revision checks.
+
+**Chat** and **Help** are utilities, not lifecycle gates. Chat can answer
+questions and handle appropriately scoped artifact or code changes while still
+enforcing invalidation and authorization rules. Help describes commands, lists
+features, and reports manifest-derived status.
 
 ### 1. Requirements
 
@@ -167,7 +185,9 @@ Collaboratively produce a requirements spec through guided dialog:
 - **Confirm & Generate** — user approves each block, spec is written
 
 Output: `.sddw/<feature-name>/requirements.md`
-Sections: Purpose, User Stories, Functional Requirements, Acceptance Criteria, Constraints
+Requirements also initialize or update the feature manifest and supporting
+governance artifacts. Human acceptance of requirements and material scope
+changes is mandatory.
 
 ### 2. Code Analysis (optional)
 
@@ -181,7 +201,7 @@ Analyse the existing codebase to ground design decisions in reality:
 - **Research & Propose** — scan for patterns, interfaces, flows, conventions
 - **Confirm & Generate** — user approves each section, analysis is written
 
-Output: `.sddw/code-analysis.md` (shared across features)
+Output: `.sddw/code-analysis.md` (shared across features and referenced by exact revision/hash)
 Sections: Relevant Patterns, Key Interfaces, Existing Flows, Conventions
 
 Skip this step for greenfield projects with no existing codebase.
@@ -244,11 +264,15 @@ Execute a single task from the design spec:
 
 - **Discover** — select task, check dependencies, gather context
 - **Research & Propose** — scan codebase, propose implementation approach and TDD applicability
-- **Execute** — implement following TDD protocol, commit protocol, and deviation handling
+- **Execute** — implement following the approved artifacts, discovered project conventions, test protocol, and deviation handling
 
 Each task file is a hybrid — the agent loads it alongside `design.md` so it has full context.
 
-After each task, a completion report (`task-N-<slug>.done.md`) is written to `implement/tasks/`, documenting what was done, deviations, and difficulties.
+After each task, a completion report (`task-<N>-<slug>.done.md`) is written to
+`implement/tasks/`, documenting what was done, evidence, deviations, and
+difficulties. SDDW does not commit merely because implementation completed;
+commits occur only when the user explicitly authorizes them and must follow the
+target repository's issue, branch, commit, and pull request conventions.
 
 ### 6. Verify
 
@@ -267,18 +291,60 @@ Output:
 ```
 .sddw/<feature-name>/
 └── verify/
-    └── report.md    # FR-by-FR pass/fail, test results, deviations, warnings
+    ├── latest.md
+    └── runs/<run-id>.md    # immutable verification evidence
 ```
 
-If issues are found, remediation tasks are created as additional task files in `design/tasks/` (continuing the numbering). These can be executed with `/sddw:implement` and then verified again — the loop repeats until all checks pass.
+If issues are found, remediation tasks or change requests are created and the
+affected artifacts are revised. Downstream artifacts become stale until they
+are regenerated or explicitly dispositioned, then implementation and
+verification repeat.
 
-### 7. Self-Improve
+### 7. Independent Review
+
+```
+/sddw:review <feature-name> [--auto]
+```
+
+Review approved specifications, implementation, tests, traceability, quality
+evidence, risks, and release/rollback readiness. The implementer cannot be the
+sole reviewer: record a human reviewer, separate agent, or fresh-context
+boundary. A changed input revision or code baseline makes the report stale and
+requires a new review. Review cannot pass conditionally or with unresolved
+blocking findings.
+
+Output: `.sddw/<feature-name>/review/runs/<run-id>.md` with `review/latest.md` pointing to the current report
+
+### 8. Release Readiness and Post-Release
+
+```
+/sddw:release <feature-name> [--auto]
+/sddw:release <feature-name> --post-release [--auto]
+```
+
+Readiness mode requires an independent review `PASS` for the exact candidate
+revision and creates an ordered plan for approvals, remote actions, deployment,
+smoke tests, monitoring, and rollback. It records planned work as planned and
+does not claim that a release occurred.
+
+Post-release mode records actual, attributable evidence after authorized humans
+perform release and deployment actions. The lifecycle is complete only when
+the release report is `closed`: rollout and smoke checks succeeded, the
+monitoring window completed, follow-ups, traceability, and metrics were
+updated, and a named human gave final sign-off.
+
+Outputs: `.sddw/<feature-name>/release/plan.md` and immutable reports under
+`.sddw/<feature-name>/release/runs/`, with `release/latest.md` as a pointer
+
+### 9. Self-Improve
 
 ```
 /sddw:self-improve <feature-name> [--auto]
 ```
 
-Analyse the completed feature's execution across all workflow steps. Identify what went wrong (or could be better) and propose concrete improvements to the workflow itself:
+Analyse the governed lifecycle evidence after release/post-release handling.
+Identify what went wrong or could be better and propose concrete improvements
+to the workflow itself:
 
 - **Analyse** — extract signals: deviations, difficulties, remediation task origins, spec gaps
 - **Diagnose** — classify findings by workflow step, identify patterns, propose improvements
@@ -289,7 +355,8 @@ Output:
 ```
 .sddw/<feature-name>/
 └── self-improve/
-    └── report.md    # findings and proposals with diff previews
+    ├── latest.md
+    └── reports/<report-id>.md    # findings and proposals with diff previews
 ```
 
 Each improvement targets a specific workflow component (instruction, questionnaire, or spec) with a concrete diff. Maintainers can review and apply those proposals separately.
@@ -303,7 +370,7 @@ Each improvement targets a specific workflow component (instruction, questionnai
 Fast-track interaction with a feature that already has artifacts. Skips the full questionnaire ceremony — just load context and talk.
 
 - **Questions** — ask anything about the feature; answered from loaded artifacts and codebase
-- **Spec updates** — edit requirements, FRs, acceptance criteria, or task files in-place
+- **Spec updates** — revise requirements, FRs, acceptance criteria, or task files through the manifest and invalidate affected downstream evidence
 - **Quick implementation** — small code changes following TDD and commit protocols
 - **Status** — check feature progress
 
@@ -321,9 +388,92 @@ If a request is too large (new task files, new architecture, >3 files), chat red
 - `/sddw:help list` — list all features with progress indicators
 - `/sddw:help status <feature-name>` — detailed feature status: which steps are done, task progress, completion reports
 
+## Artifact Model
+
+Artifacts are a revisioned evidence graph, not one output per step. The feature
+manifest is the authority for identity, code baseline, artifact revisions and
+hashes, approvals, invalidation, lifecycle status, and gates. Dependencies use
+`<artifact-id>@<revision>#<sha256>` so consumers can prove exactly which input
+they used.
+
+```text
+.sddw/
+├── code-analysis.md                         # optional shared analysis
+└── <feature-name>/
+    ├── feature-manifest.md                  # lifecycle authority and ledger
+    ├── requirements.md
+    ├── traceability-matrix.md               # intent through release evidence
+    ├── risk-register.md
+    ├── metrics.md
+    ├── decisions/
+    │   └── ADR-<NNN>-<slug>.md
+    ├── changes/
+    │   └── CR-<NNN>-<slug>.md
+    ├── history/
+    │   └── <artifact-id>/rev-<N>.md
+    ├── quality/
+    │   └── plan.md
+    ├── design/
+    │   ├── design.md
+    │   └── tasks/task-<N>-<slug>.md
+    ├── implement/
+    │   └── tasks/task-<N>-<slug>.done.md
+    ├── runs/
+    │   └── run-<timestamp>-<step>.md
+    ├── verify/
+    │   ├── latest.md
+    │   └── runs/<run-id>.md
+    ├── review/
+    │   ├── latest.md
+    │   └── runs/<run-id>.md
+    ├── release/
+    │   ├── plan.md
+    │   ├── latest.md
+    │   └── runs/<run-id>.md
+    └── self-improve/
+        ├── latest.md
+        └── reports/<report-id>.md
+```
+
+Changing an upstream artifact increments its revision. Dependent artifacts are
+marked `stale`, their approvals are cleared, affected gates return to
+`pending`, and the lifecycle is `blocked` until the impact is resolved. Change
+requests preserve the reason and impact instead of silently rewriting history.
+
+### Clean Transition
+
+The current manifest and revision model applies to every newly generated or
+regenerated artifact. Existing artifacts remain readable evidence, but SDDW
+does not migrate them merely to adopt the model and provides no legacy
+migration, compatibility, or dual-write layer. Regeneration uses the current
+template and governance rules.
+
+### Status and PASS Semantics
+
+Status vocabularies are scoped and must not be mixed:
+
+- **Lifecycle:** `proposed`, `specified`, `designed`, `planned`, `implementing`, `verifying`, `reviewed`, `release-ready`, `released`, `blocked`, or `cancelled`.
+- **Artifacts:** `draft`, `in-review`, `approved`, `stale`, `superseded`, or `waived`.
+- **Manifest gates:** quality is `pending`, `passed`, `failed`, or `waived`; review is `pending`, `PASS`, `FAIL`, or `BLOCKED`; release is `pending`, `approved`, `blocked`, or `released`.
+- **Verification items:** `PASS`, `FAIL`, `PARTIAL`, `UNVERIFIED`, or `WAIVED`.
+- **Runs:** `running`, `succeeded`, `failed`, `blocked`, `interrupted`, or `resumed`.
+- **Review reports:** `in-progress`, `final`, or `stale`, with a result of `PASS`, `FAIL`, or `BLOCKED`.
+- **Release plans:** `draft`, `approved`, `executing`, `blocked`, `completed`, or `stale`.
+- **Release reports:** execution is `pending`, `succeeded`, `failed`, `rolled-back`, or `unverifiable`; lifecycle status is `recording`, `monitoring`, or `closed`.
+
+Verification is overall `PASS` only when every task is complete, every FR and
+NFR is `PASS`, and every required quality check is `PASS`. `PARTIAL`, `UNVERIFIED`,
+`WAIVED`, pending work, or a failed required check prevents overall `PASS`; a
+waiver is always reported as `WAIVED`, never promoted to `PASS`. Independent
+review passes only for the exact current revisions and baseline when all
+mandatory evidence is valid, traceability and quality are complete, and no
+blocking finding remains. Review `PASS` enables release preparation but is not
+release approval or proof of release.
+
 ## Anatomy of a Step
 
-Each step is assembled from four modular components:
+Lifecycle behavior is assembled from platform-independent core components and
+thin adapter commands:
 
 | Component | Purpose | Folder |
 |-----------|---------|--------|
@@ -344,11 +494,12 @@ A command wires these together:
 │  core/questionnaires/<step>.md  ← dialog flow             │
 │  core/specs/<step>.md           ← output format           │
 │                                                          │
-│  reads:  .sddw/<feature>/<previous_step>.md  ← input     │
-│  writes: .sddw/<feature>/<current_step>.md   ← output    │
+│  reads:  manifest-selected artifact revisions             │
+│  writes: governed artifacts, evidence, and ledger updates │
 └──────────────────────────────────────────────────────────┘
 ```
 
-Each component lives in its own folder so they can be reused, tested, and evolved independently. The command file itself stays small — just references and glue.
-
-Every step follows a three-phase dialog: **Discover → Research & Propose → Confirm & Generate**. One question at a time, structured options, every spec block confirmed by the user before generation.
+Each component lives in its own folder so it can be reused, tested, and evolved
+independently. Commands remain thin references and glue. Individual stages use
+the interaction phases appropriate to their work, while all stages share the
+same trust model, revision checks, evidence rules, and non-bypassable gates.

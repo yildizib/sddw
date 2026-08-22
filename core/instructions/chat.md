@@ -13,6 +13,7 @@ Read the feature artifacts from `<resolved-sddw-path>/<feature-name>/`:
 | Artifact | Path | Required |
 |----------|------|----------|
 | Requirements | `<feature-name>/requirements.md` | Yes |
+| Feature manifest | `<feature-name>/feature-manifest.md` | For any mutation |
 | Code analysis | `code-analysis.md` | No |
 | Design | `<feature-name>/design/design.md` | No |
 | Task files | `<feature-name>/design/tasks/task-*.md` | No |
@@ -20,6 +21,8 @@ Read the feature artifacts from `<resolved-sddw-path>/<feature-name>/`:
 
 If `requirements.md` does not exist for the feature, stop and say:
 > "Feature '<feature-name>' not found. Start the Requirements step for this feature first."
+
+If the feature manifest is missing, questions remain allowed, but SHALL NOT mutate artifacts or code. Stop mutation requests and direct the user to the owning lifecycle step to establish the manifest.
 
 If no feature name is provided, ask the user with `structured question mechanism`.
 
@@ -32,11 +35,11 @@ Load all available artifacts **silently** — do not list or summarize what was 
 Chat is not interactive by default. It assumes the user knows what they want and acts directly.
 
 The only things that pause and ask:
-- Architectural deviations (Deviation Rule 4 from implement instructions)
-- Spec changes that affect scope (adding or removing FRs, changing constraints)
+- All mandatory human gates from common.md
+- Changes to approved or baselined artifacts
 - Ambiguous requests where the wrong interpretation could cause damage
 
-The `--auto` flag from common.md is still respected if explicitly passed — it removes even these pauses.
+The `--auto` flag from common.md is respected for non-gated work only. It SHALL NOT remove these pauses.
 
 ## Process
 
@@ -59,8 +62,9 @@ Trigger: user asks to update, change, add to, or remove from requirements, FRs, 
 Action:
 1. Identify which artifact to edit
 2. Show the proposed change (before/after or diff summary)
-3. Ask for confirmation with `structured question mechanism` if the change affects scope (new FR, removed FR, changed constraint). Otherwise apply directly.
-4. Edit the file
+3. Determine its lifecycle state. An artifact is directly editable only when explicitly marked as a draft.
+4. For a draft, apply the edit unless a mandatory human gate applies.
+5. For an approved or baselined artifact, SHALL NOT mutate the current revision. Create the canonical change request under `changes/`, obtain all applicable human approvals, create a new revision through the owning lifecycle step, and update `feature-manifest.md`. If that lifecycle is unavailable, stop and direct the user to the owning step.
 
 ### Quick Implementation
 
@@ -68,9 +72,9 @@ Trigger: user describes a code change, fix, or small addition.
 
 Action:
 1. Identify which FRs or tasks the change relates to
-2. Follow the TDD Protocol, Commit Protocol, and Deviation Handling from the implement instructions
+2. Run the Implement preflight and follow its TDD Protocol, Commit Protocol, and Deviation Handling
 3. Write a completion note — but only if a corresponding task file exists. Do not create `.done.md` files for ad-hoc changes that have no task file.
-4. Reference FR-IDs in commit messages when the change traces to requirements
+4. Do not commit unless the user explicitly authorizes it; then follow discovered repository conventions
 
 ### Status
 
@@ -93,7 +97,8 @@ Heuristic: if the change would touch more than 3 files or require more than 1 co
 - SHALL reference FR-IDs when making changes that trace to requirements
 - SHALL follow commit protocol from implement instructions for any code changes
 - SHALL follow deviation handling from implement instructions for any code changes
-- SHALL use `structured question mechanism` for disambiguation and scope-affecting confirmations
+- SHALL use `structured question mechanism` for disambiguation and all human gates
 - SHALL NOT start a full questionnaire flow
-- SHALL NOT produce new artifact types — chat edits existing artifacts or writes code
+- SHALL NOT invent ad-hoc artifact types; lifecycle-required change requests, revisions, and manifest records are allowed
 - SHALL NOT create task files — if the work needs a task file, redirect to `the combined Design and Taskify step` or `the Taskify step`
+- SHALL NOT directly modify approved or baselined artifacts; use their change request and revision lifecycle

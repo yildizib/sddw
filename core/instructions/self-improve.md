@@ -1,142 +1,49 @@
-# Self-Improve Step Instructions
+# Self-Improve Instructions
 
-Analyse a completed feature's execution across all workflow steps. Identify gaps, errors, and patterns, then propose concrete improvements to sddw workflow components. This is the final step of the sddw workflow.
+Analyse evidence from a released feature and propose specific workflow improvements without modifying workflow components or approved feature artifacts.
 
-## Goal
+## Release Closure Gate
 
-Turn execution experience into workflow improvement proposals. Each feature execution is a learning opportunity — find what went wrong (or could be better) and propose specific diffs to instructions, questionnaires, or specs so that maintainers can apply them deliberately.
+Load the feature manifest and exact release report. Self-improve may run only after an actual release and post-release assessment:
 
-## Prerequisites
+- the release report records `Execution result: succeeded` with successful applicable rollout and smoke-test evidence;
+- it records `Lifecycle status: closed`, including completed monitoring window, follow-up ownership, trace and metrics updates, and final human sign-off; and
+- the feature manifest records the matching released revision and no unresolved stale input.
 
-Read the feature artifacts from `<resolved-sddw-path>/<feature-name>/`:
+A readiness plan, CI success, verification PASS, review PASS, or `monitoring` release is insufficient. If closure evidence is missing or inconsistent, create a blocked run manifest and stop.
 
-| Artifact | Path | Required |
-|----------|------|----------|
-| Requirements | `<feature-name>/requirements.md` | Yes |
-| Design | `<feature-name>/design/design.md` | Yes |
-| Task files | `<feature-name>/design/tasks/task-*.md` | Yes |
-| Completion reports | `<feature-name>/implement/tasks/*.done.md` | Yes |
-| Verification report | `<feature-name>/verify/report.md` | Yes |
-| Code analysis | `code-analysis.md` | No |
+## Required Evidence
 
-If the verification report does not exist, stop and suggest completing the Verify step first. Self-improve requires a completed feature lifecycle to analyse.
-
-Also read the current sddw workflow components that may be improved:
-
-| Component | Path |
-|-----------|------|
-| Instructions | `<workflow-root>/core/instructions/*.md` |
-| Questionnaires | `<workflow-root>/core/questionnaires/*.md` |
-| Specs | `<workflow-root>/core/specs/*.md` |
+Validate exact revisions/hashes and freshness for the feature manifest, requirements, design/ADRs, task and completion records, verification report, independent review report, release plan/report, traceability matrix, risk register, quality evidence, run manifests, and metrics. Include actual review findings, release/deployment/smoke/monitoring evidence, post-release incidents or escaped defects, and measured lifecycle results. Record unavailable evidence as unavailable; never infer it.
 
 ## Process
 
-Follow the three-phase flow defined in the questionnaire:
-
-1. **Analyse** — Load all artifacts and extract signals: deviations, difficulties, remediation task origins, test gaps, spec ambiguities. *In `--auto`: analyse fully autonomously.*
-
-2. **Diagnose** — Classify findings by workflow step and component. Identify patterns and root causes. Propose specific improvements with diff previews. *In `--auto`: propose autonomously.*
-
-3. **Report** — Present the proposals and generate the improvement report. The report is advisory and SHALL NOT modify workflow files.
-
----
-
-## Analysis Dimensions
-
-### 1. Requirements Quality
-Signals to check:
-- Remediation tasks with `Origin: requirements` — indicates ambiguous or missing spec
-- Deviations noting "spec gap" in completion reports
-- Acceptance criteria that were PARTIAL in verification (uncovered scenarios)
-- FRs that were too vague to test directly
-
-Questions to answer:
-- Were FRs specific enough for design and implementation?
-- Were acceptance criteria comprehensive enough for verification?
-- Were constraints clear about boundaries?
-
-### 2. Design Quality
-Signals to check:
-- Remediation tasks with `Origin: design` — indicates task scoping or architecture gap
-- Rule 4 (architectural) deviations in completion reports — indicates design missed something
-- Tasks that had unresolved dependencies or incorrect `Depends on:`
-- Done criteria that were too vague to verify
-
-Questions to answer:
-- Were task files (with their `design.md` references) complete enough for implementation?
-- Were task dependencies accurate?
-- Were architecture decisions adequate?
-
-### 3. Implementation Quality
-Signals to check:
-- Remediation tasks with `Origin: implementation` — code bugs
-- Deviations (Rules 1-3) frequency and patterns in completion reports
-- Difficulties section patterns across tasks
-- TDD effectiveness (did tests catch the right things?)
-
-Questions to answer:
-- Were implementation instructions clear enough?
-- Did the TDD protocol catch issues early?
-- Were deviation rules applied correctly?
-
-### 4. Verification Coverage
-Signals to check:
-- FRs that were PARTIAL due to missing test coverage
-- Acceptance criteria not covered by tests
-- Done criteria that couldn't be verified programmatically
-- Warnings in the verification report
-
-Questions to answer:
-- Did the verification step catch all real issues?
-- Were done criteria verifiable?
-
-### 5. Cross-Step Patterns
-Signals to check:
-- Information lost between steps (requirements → design → implement)
-- Context that had to be re-discovered during implementation
-- Gaps in the artifact chain (something not captured anywhere)
-
----
-
-## Improvement Classification
-
-| Type | Target | Example |
-|------|--------|---------|
-| **Instruction improvement** | `core/instructions/*.md` | "Add a rule to check boundary conditions in acceptance criteria" |
-| **Questionnaire improvement** | `core/questionnaires/*.md` | "Add a question about performance constraints during requirements" |
-| **Spec improvement** | `core/specs/*.md` | "Add a Performance section to the task file format" |
-| **Process improvement** | Process/workflow suggestion | "Code analysis should be required, not optional, for existing codebases" |
-
-## Improvement Proposal Format
-
-Each proposal SHALL include:
-- **ID:** IMP-01, IMP-02, etc.
-- **Type:** instruction | questionnaire | spec | process
-- **Target file:** the specific file to modify
-- **Step:** which workflow step this affects (requirements | code-analysis | design | implement | verify)
-- **Finding:** what went wrong or could be better (with evidence from artifacts)
-- **Proposal:** the specific change to make
-- **Diff preview:** the actual text to add/change/remove (when targeting a file)
-
----
+1. **Analyse** - extract evidence-backed deviations, difficulties, findings, remediation, trace gaps, gate outcomes, release deviations, incidents, metrics, interventions, and costs where available.
+2. **Diagnose** - classify root causes by lifecycle area and distinguish workflow defects from feature-specific events. Ask one question at a time when attribution requires human context.
+3. **Report** - propose minimal actionable improvements with target files and diff previews, write a versioned report, update metrics where new post-release evidence changes measured values, and complete the run manifest.
 
 ## Rules
 
-- SHALL base all findings on evidence from the feature's artifacts — no speculation
-- SHALL classify every finding by workflow step origin
-- SHALL propose concrete, actionable improvements — not vague suggestions
-- SHALL include diff previews for file changes so the user can evaluate precisely
-- SHALL NOT modify workflow files; include proposed changes as diff previews in the report
-- SHALL NOT propose improvements unrelated to the analysed feature's execution
-- SHALL NOT modify the feature's own artifacts (requirements.md, task files, etc.)
-- SHALL generate the improvement report even when the user requests no proposal adjustments
-- SHALL keep proposals minimal — fix the specific gap, don't redesign the workflow
+- Findings SHALL cite resolvable artifact revisions, run IDs, report finding IDs, release evidence, metrics, or source locations.
+- Every proposal SHALL have a stable `IMP-###` ID, type, target, lifecycle area, evidence-backed finding, proposed change, and diff preview.
+- SHALL NOT speculate, hide missing data, or propose unrelated redesign.
+- SHALL NOT modify workflow files. The report is advisory.
+- SHALL NOT directly mutate approved or baselined feature artifacts. Corrections use the owning change-request and revision lifecycle.
+- Update `metrics.md` as a new revision when post-release evidence changes values, preserving definitions, source windows, exclusions, and unknown values as `not-available`.
+- Update `feature-manifest.md` only for the new report, metrics revision, and run evidence; preserve release and approval history.
+
+## Versioned Reports
+
+Write each execution to a unique report under `self-improve/reports/<report-id>.md`. SHALL NOT overwrite a prior self-improve report. Link parent/prior reports when applicable and list every report revision/hash in the feature manifest and run manifest.
+
+## Clean Transition
+
+Versioning and current report format apply to reports newly generated by this run. Do not rewrite prior reports or unchanged legacy artifacts solely to migrate them.
 
 ## Output
 
+```text
+<resolved-sddw-path>/<feature-name>/self-improve/reports/<report-id>.md
+<resolved-sddw-path>/<feature-name>/metrics.md
+<resolved-sddw-path>/<feature-name>/runs/run-<YYYYMMDDTHHMMSSZ>-self-improve.md
 ```
-.sddw/<feature-name>/self-improve/
-└── report.md
-```
-
-The improvement report is the only output. Maintainers may review and apply its diff previews separately.

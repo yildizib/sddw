@@ -54,6 +54,7 @@ then
     fail "adapter manifest validation failed"
 fi
 
+# shellcheck disable=SC2088  # This is a forbidden literal, not a path to expand.
 claude_home_marker='~/.claude'
 for forbidden in AskUserQuestion "$claude_home_marker" '.opencode' '/sddw:' '/clear'; do
     if grep -R -F -- "$forbidden" "$CORE_DIR" >/dev/null 2>&1; then

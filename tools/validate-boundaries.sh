@@ -54,7 +54,8 @@ then
     fail "adapter manifest validation failed"
 fi
 
-for forbidden in AskUserQuestion '~/.claude' '.opencode' '/sddw:' '/clear'; do
+claude_home_marker='~/.claude'
+for forbidden in AskUserQuestion "$claude_home_marker" '.opencode' '/sddw:' '/clear'; do
     if grep -R -F -- "$forbidden" "$CORE_DIR" >/dev/null 2>&1; then
         fail "platform-specific reference found in core: $forbidden"
     fi

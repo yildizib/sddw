@@ -203,6 +203,7 @@ if [ "$UNINSTALL" = true ]; then
     UNINSTALL_RUNTIME_BACKUP="$UNINSTALL_STAGING/runtime"
     UNINSTALL_COMMITTED=false
 
+    # shellcheck disable=SC2317,SC2329  # Invoked indirectly by the EXIT trap.
     cleanup_uninstall() {
         if [ "$UNINSTALL_COMMITTED" = false ]; then
             mkdir -p "$COMMANDS_DIR"

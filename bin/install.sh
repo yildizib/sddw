@@ -153,7 +153,7 @@ restore_adapter() {
     mkdir -p "$ADAPTER_COMMANDS_DIR"
     for source in "$ADAPTER_COMMAND_SOURCE"/*.md; do
         name="$(basename "$source")"
-        rm -rf "$ADAPTER_COMMANDS_DIR/$name"
+        rm -rf "${ADAPTER_COMMANDS_DIR:?}/$name"
         if [ -e "$backup_root/commands/$name" ] || [ -L "$backup_root/commands/$name" ]; then
             cp -a "$backup_root/commands/$name" "$ADAPTER_COMMANDS_DIR/$name"
         fi

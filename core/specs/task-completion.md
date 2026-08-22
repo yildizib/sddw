@@ -1,55 +1,72 @@
 ## Task Completion Report
 
-Written after a task is implemented. Stored in the implement folder as `task-<N>-<slug>.done.md`.
+Written after implementation and checks, before any optional commit. It records observed code and verification state without depending on commit hashes or editing the task specification.
 
 **Location:** `.sddw/<feature-name>/implement/tasks/task-<N>-<slug>.done.md`
 
 **Format:**
 ```
-# Task <N> Completion: [title from task file]
+# <TASK-ID> Completion: [task title]
+
+## Governance
+- **Feature ID:** FEAT-<stable-id>
+- **Report revision:** <integer>
+- **Status:** complete | partial | blocked
+- **Completed:** <ISO-8601 timestamp>
+- **Prepared by:** <agent/person>
+- **Implementation run/context:** <run ID and context/session identifier>
+- **Input revisions:** task=<N>; requirements=<N>; code-analysis=<N>; design=<N>
+- **Input hashes:** task=<sha256>; requirements=<sha256>; code-analysis=<sha256>; design=<sha256>
+- **Approval:** pending | <approver, ISO-8601 timestamp, decision/reference>
+
+## Inputs
+- **Task:** <path> revision <N>, sha256 <hash>
+- **Requirements:** <path> revision <N>, sha256 <hash>
+- **Code analysis:** <path> revision <N>, baseline <full SHA>, sha256 <hash>
+- **Design:** <path> revision <N>, sha256 <hash>
 
 ## Summary
-[1-3 sentences: what was implemented]
+[One to three sentences describing implemented behavior.]
 
-## Commits
-- `<hash>` <message>
+## Code Baseline and Diff
+- **Baseline SHA:** <full pre-implementation SHA>
+- **Working tree diff:** [paths changed and concise behavior summary]
+- **Diff evidence:** `git diff <baseline>` | patch/artifact reference
+
+## Checks
+- **TEST-01:** PASS | FAIL | PARTIAL | UNVERIFIED | WAIVED — [command, result, evidence]
+- **QG-01:** PASS | FAIL | PARTIAL | UNVERIFIED | WAIVED — [command, result, evidence]
+
+## Waivers
+- **WVR-01:** [check/criterion] — **Reason:** [reason] — **Risk:** [accepted risk] — **Approved by:** [owner/date/reference] — **Expires:** [date/condition]
 
 ## Deviations
-[List deviations from the task spec, or "None"]
-- **Rule <N>: <type>** — [what was found] → [what was done]
+- **DEV-01:** [planned vs actual] — **Reason:** [why] — **Impact:** [trace IDs] — **Disposition:** resolved | accepted | open
 
 ## Difficulties
-[List unexpected issues encountered, or "None"]
-- [Issue] — [how it was resolved]
+- [Unexpected issue] — [resolution or current blocker]
 
 ## Notes
-[Optional: anything useful for future tasks or the next developer]
+[Optional handoff information.]
 ```
 
 **Rules:**
-- SHALL be written after the task commit(s), not before
-- SHALL reference actual commit hashes
-- SHALL list ALL deviations, even auto-fixed ones (Rules 1-3)
-- SHALL be concise — this is a log, not a narrative
-- Difficulties SHALL include resolution, not just the problem
-- Notes section is optional — omit if nothing useful to add
-- SHALL NOT modify the original task file (task-N-*.md) — it remains as the spec
+- SHALL be written after implementation checks and before any optional commit. Commit hashes SHALL NOT be required.
+- SHALL NOT cite itself as evidence; evidence SHALL be source, diff, command output, test result, or external decision record.
+- SHALL pin task and artifact input revisions/hashes plus the code baseline used for implementation.
+- SHALL identify the implementation run and context so reviewer independence can be checked against durable evidence.
+- SHALL summarize the actual diff, including all changed paths relevant to the task.
+- Every linked test and quality gate SHALL have a status and evidence. A waiver SHALL include approver, risk, and expiry.
+- SHALL list every deviation, including auto-fixed deviations, with trace impact and disposition.
+- Difficulties SHALL include their resolution or current blocker.
+- SHALL remain concise and SHALL NOT modify the original task file.
 
 **Example:**
-> # Task 1 Completion: Create password reset token migration and model
+> ## Code Baseline and Diff
+> - **Baseline SHA:** `0123456789abcdef0123456789abcdef01234567`
+> - **Working tree diff:** Added token model and reversible migration in `src/models/reset_token.py` and `db/migrations/003_reset_tokens.py`
+> - **Diff evidence:** `git diff 0123456789abcdef0123456789abcdef01234567 -- src/models/reset_token.py db/migrations/003_reset_tokens.py`
 >
-> ## Summary
-> Created Alembic migration for `password_reset_tokens` table and `PasswordResetToken` model with `is_valid()` method.
->
-> ## Commits
-> - `a1b2c3d` test(password-reset): add failing tests for token model (FR-01, FR-02)
-> - `e4f5g6h` feat(password-reset): create token migration and model (FR-01, FR-02)
->
-> ## Deviations
-> - **Rule 2: Missing Critical** — added `__repr__` to model for debugging, not in spec
->
-> ## Difficulties
-> - Alembic autogenerate didn't detect the UUID type — manually specified `sa.dialects.postgresql.UUID`
->
-> ## Notes
-> Token index on `token` column uses hash index instead of btree — faster for exact lookups.
+> ## Checks
+> - **TEST-01:** PASS — `pytest tests/auth/test_reset_token.py -q`; 6 passed
+> - **QG-01:** PASS — `alembic upgrade head && alembic downgrade -1`; exit 0

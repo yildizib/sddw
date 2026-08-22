@@ -19,6 +19,8 @@ This file maps the platform-independent core interaction contract to Claude Code
 - Design and Taskify: `/sddw:design_and_taskify`
 - Implement: `/sddw:implement`
 - Verify: `/sddw:verify`
+- Review: `/sddw:review`
+- Release: `/sddw:release`
 - Self-Improve: `/sddw:self-improve`
 - Chat: `/sddw:chat`
 - Help: `/sddw:help`

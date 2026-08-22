@@ -1,108 +1,55 @@
 # Self-Improve Questionnaire
 
-Three-phase dialog for analysing feature execution and proposing workflow improvements.
+Analyse a closed release and generate an advisory, versioned improvement report. Ask one question at a time. Self-improve never edits workflow files or approved feature artifacts.
 
-**All modes:** Self-improve is advisory and never modifies workflow files.
+## Closure Check
 
----
+Present the exact released revision and evidence state:
 
-## Phase 1: Analyse
+- release rollout and smoke result: `succeeded` or not;
+- release report lifecycle status: `closed` or not;
+- monitoring window and final human sign-off;
+- review report and independence boundary;
+- manifest, traceability, risk, metrics, and run freshness.
 
-*In `--auto`: analyse fully autonomously.*
+If actual release/post-release closure is not proven, stop with a blocked run manifest. Do not treat a release plan, CI result, verification PASS, review PASS, or `monitoring` state as closure.
 
-Load all feature artifacts and extract signals.
+## Analyse
 
-**Step 1 — Lifecycle check:**
+Load exact revisions/hashes for requirements, design/ADRs, tasks, completion reports, verification, independent review, quality results, release plan/report, traceability, risks, metrics, and runs.
 
-Present a lifecycle summary:
-- Requirements: [complete/incomplete]
-- Code Analysis: [exists/skipped]
-- Design: [N tasks created]
-- Implementation: [N/M tasks completed]
-- Verification: [PASS/FAIL/PARTIAL — N remediation tasks]
+Present evidence in focused groups:
 
-If verification report is missing, stop:
-> "No verification report found. Complete the Verify step first — self-improve needs the full lifecycle."
+- requirement/design ambiguity and approved changes;
+- implementation deviations, difficulties, and remediation;
+- verification and review findings;
+- release deviations, migration/rollback, smoke, monitoring, incidents, and escaped defects;
+- trace coverage, first-pass rate, lead/cycle time, churn, interventions, and cost where available.
 
-**Step 2 — Signal extraction:**
+Unknown values remain `not-available`. If root-cause attribution is ambiguous, present the evidence and ask one attribution question. Wait before continuing.
 
-Scan all artifacts and extract:
+## Diagnose and Propose
 
-From completion reports (`.done.md`):
-- Count and classify deviations by rule (1-4)
-- List all difficulties
-- Note any spec gaps mentioned
+Group findings by lifecycle area and cite artifact revisions, run IDs, finding IDs, trace/risk IDs, metrics, or source locations. Distinguish workflow gaps from feature-specific events.
 
-From verification report:
-- List FRs that were FAIL or PARTIAL
-- List remediation tasks with their Origin classification
-- List uncovered acceptance criteria
-- List warnings
+Present proposals as readable text. Each proposal includes:
 
-Present a signal summary:
-> "Here's what I found across the feature lifecycle:"
-> - Deviations: [N] (Rule 1: [n], Rule 2: [n], Rule 3: [n], Rule 4: [n])
-> - Difficulties: [N]
-> - Remediation tasks: [N] (requirements: [n], design: [n], implementation: [n], external: [n])
-> - Uncovered criteria: [N]
-> - Warnings: [N]
+- stable `IMP-###` ID;
+- type and target file/process;
+- affected lifecycle area;
+- evidence-backed finding;
+- minimal proposed change;
+- exact diff preview.
 
-If any root cause origin seems ambiguous, use `structured question mechanism`:
-- "[Origin A] — [reasoning]"
-- "[Origin B] — [reasoning]"
-Question: "This remediation task could stem from either step. What's your read?"
+After presenting all proposals, ask one question about required clarification or adjustment. Do not offer to apply them.
 
-Wait for response.
+## Report
 
----
+Present one report-generation confirmation with evidence coverage, findings, proposals, unavailable data, and any metrics revision. Then:
 
-## Phase 2: Diagnose
+- write a unique `self-improve/reports/<report-id>.md`;
+- never overwrite or rewrite a prior report;
+- create a new `metrics.md` revision when post-release evidence changes measurements;
+- update the feature manifest and self-improve run manifest with exact revisions/hashes and prior-report links.
 
-*In `--auto`: diagnose and propose autonomously.*
-
-### 2.1 Pattern Analysis
-
-Group findings by workflow step:
-
-> **Requirements step:** [N findings]
-> - [finding 1 with evidence]
-> - [finding 2 with evidence]
->
-> **Design step:** [N findings]
-> - ...
->
-> **Implementation step:** [N findings]
-> - ...
->
-> **Verification step:** [N findings]
-> - ...
-
-If no findings for a step, show "No issues identified."
-
-### 2.2 Improvement Proposals
-
-For each finding, propose a concrete improvement:
-
-> **IMP-01** ([type]: [target file])
-> - **Step:** [affected step]
-> - **Finding:** [what went wrong, with evidence]
-> - **Proposal:** [what to change]
-> - **Diff preview:**
-> ```diff
-> - [old text]
-> + [new text]
-> ```
-
-Present all proposals as a batch. In interactive mode, ask whether any proposal needs clarification or adjustment before generating the report. Do not offer to apply changes.
-
----
-
-## Phase 3: Report
-
-Generate the improvement report to `.sddw/<feature-name>/self-improve/report.md`.
-
-Present a summary:
-> "Improvement report generated."
-> - Findings: [N] across [M] steps
-> - Proposals: [N] total
-> - Workflow files modified: 0
+Corrections to approved/baselined inputs use their owning change-request and revision lifecycle, never direct mutation.

@@ -5,6 +5,8 @@ taskify
 design_and_taskify
 implement
 verify
+review
+release
 self-improve
 chat
 help

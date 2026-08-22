@@ -17,6 +17,9 @@ argument-hint: "<feature-name> [--auto]"
 # COMMON RULES
 @~/.claude/sddw/core/instructions/common.md
 
+# TRUST MODEL
+@~/.claude/sddw/core/security/trust-model.md
+
 # INSTRUCTIONS
 @~/.claude/sddw/core/instructions/code-analysis.md
 
@@ -25,6 +28,8 @@ argument-hint: "<feature-name> [--auto]"
 
 # SPECS
 @~/.claude/sddw/core/specs/code-analysis.md
+@~/.claude/sddw/core/specs/feature-manifest.md
+@~/.claude/sddw/core/specs/run-manifest.md
 
 # NEXT STEP
 After the user approves the code analysis, suggest:

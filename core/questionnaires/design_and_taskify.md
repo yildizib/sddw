@@ -1,97 +1,49 @@
 # Design and Taskify Questionnaire
 
-Monolithic 3-phase dialog covering everything needed to produce `design.md` and the hybrid task files in a single flow.
+Produce an atomic design and task-set revision through a one-question-at-a-time dialog. In `--auto`, draft autonomously from validated evidence but never grant human approvals, waivers, or risk acceptance.
 
----
+## Preflight
 
-## Phase 1: Discover
+Present the exact human-approved requirements revision/hash, manifest status/revision, baseline SHA, trace state, risk and quality-plan revisions, and code-analysis freshness. Missing, stale, superseded, unapproved, or conflicting inputs block the operation.
 
-*In `--auto`: perform discovery fully autonomously.*
+If design or tasks exist, ask one state-appropriate question: abort, regenerate unapproved drafts as new revisions, or initiate a change request for approved/baselined artifacts. Never offer overwrite.
 
-Understand the implementation landscape for both architecture and task breakdown. One question at a time. Follow-ups via `structured question mechanism`.
+## Discover
 
-**Step 1 — Open:**
-> "I've read the requirements. Before I propose a design and task breakdown, is there anything specific about the architecture or how you'd like the tasks structured (e.g., granularity, parallel work)?"
+Ask one question at a time and wait after each. Start with the most consequential architecture unknown. Ask task granularity and parallelism only after design constraints are understood, and as separate questions.
 
-Wait for response.
+Cover architecture boundaries, data/migration, compatibility, risks, rollback, observability, task ownership, granularity, and safe parallel work without combining them into a checklist prompt.
 
-**Step 2+** — Follow up based on their answer. Pick ONE at a time:
-- **Architecture/Constraints** — "are you thinking this lives in [module] or should it be separate?"
-- **Task Granularity** — "do you prefer fine-grained tasks or larger vertical slices?"
+## Design Proposals
 
-Use `structured question mechanism` with 2-4 concrete options based on what you see in the codebase (or code-analysis.md if available).
+Present one concern at a time with stable IDs, FR/NFR/AC trace links, repository evidence, alternatives, consequences, and risks:
 
----
+1. `DES-###` architecture and flows
+2. `DES-###` data models and migration
+3. `DES-###` interfaces and compatibility
+4. `ADR-###` decisions and rejected alternatives
+5. `RISK-###` mitigations, triggers, owners, and residual risk
+6. rollback/forward-fix and observability
 
-## Phase 2: Research & Propose
+After each concern, ask one correction/acceptance question.
 
-Research and propose ONE section at a time. Wait for approval before moving to the next.
+## Task Proposal
 
-*In `--auto`: decide all sections autonomously.*
+After the design draft is coherent, present the complete candidate DAG as text:
 
-### 2.1 Architecture
-Present the architecture overview as context text, then use `structured question mechanism` with options:
-- Option 1: [Proposed architecture — description, data flow]
-- Option 2: [Alternative approach — description]
-Question: "Which architecture do you prefer, or would you adjust?"
-Wait for response. Lock in architecture.
+| Task ID | Outcome | Depends on | FR/NFR/AC | Design/ADR/Risk | Tests | Quality gates |
+|---|---|---|---|---|---|---|
 
-### 2.2 Data Models
-> "I'd need these entities:"
-> - [Entity]: [key fields and types]
-> "This requires a migration. Rollback strategy: [description]."
-> "Agree, or would you change the schema?"
-Wait for response. Lock in data models.
+Use stable `TASK-###` IDs and include concrete files, affected tests, contracts, acceptance criteria, and done criteria. Ask one question about task granularity. Ask any sequencing correction as a separate follow-up.
 
-### 2.3 Interface Contracts
-> "Shared API endpoints:"
-> - [METHOD] [path]: [description, input, output, errors]
-> "Internal interfaces (shared and task-specific):"
-> - [Module.method(params) -> return]: [purpose]
-> "Agree with these contracts?"
-Wait for response. Lock in contracts.
+## Atomic Generate
 
-### 2.4 Design Decisions
-For each non-obvious decision, present ONE at a time using `structured question mechanism` with options:
-- **[Option A] (Recommended)** — [pros]. [cons]. Use `preview` for code snippets if helpful.
-- **[Option B]** — [pros]. [cons].
-Question: "Decision: [title]. I recommend option 1 because [rationale]. Your call?"
-Wait for response. Lock in decision. Move to next decision if any.
+Present one final confirmation summarizing design coverage, ADRs, risks, migration, compatibility, rollback, observability, task/test/quality coverage, and DAG order.
 
-### 2.5 Task Breakdown
-Based on the approved design sections, propose the task breakdown. Each task will be generated as a hybrid file referencing `design.md`.
+On confirmation:
 
-Present the task table as context text:
-| Task | Description | Depends on | FRs |
-|------|-------------|------------|-----|
-| 1 | [title] | none | FR-01 |
-| 2 | [title] | task-1 | FR-02 |
+1. Stage design, ADRs, tasks, traceability, risk, feature-manifest, and run-manifest changes without altering canonical outputs.
+2. Validate IDs, hashes, every FR/NFR/AC disposition, bidirectional trace completeness, task references, quality links, and an acyclic topologically executable DAG.
+3. Atomically publish the complete set only if every validation passes.
 
-Then use `structured question mechanism` with options:
-- Option 1: **Approve task breakdown**
-- Option 2: **Adjust granularity** (break them down more / combine them)
-- Option 3: **Adjust sequencing** (change dependencies)
-Question: "How does this task breakdown look?"
-Wait for response. Lock in task breakdown.
-
----
-
-## Phase 3: Confirm & Generate
-
-Once all sections (2.1 through 2.5) are approved:
-
-> "Ready to generate everything? Here's what I'll write:"
-> - `design.md` (Architecture, Data Models, Interface Contracts, Design Decisions)
-> - `[N]` task files referencing `design.md`
-
-Use `structured question mechanism` to confirm:
-- Option 1: **Generate files**
-- Option 2: **Wait, I need to change something**
-
-*In `--auto`: generate directly without confirmation.*
-
-Once confirmed, you SHALL write the files in this strict order:
-1. Write `design.md` FIRST to `.sddw/<feature-name>/design/design.md`.
-2. Then write the task files to `.sddw/<feature-name>/design/tasks/task-<N>-<slug>.md`.
-
-If the user wants changes, return to the relevant section in Phase 2.
+If any stage fails, publish no partial design or task set, restore the pre-run canonical state, and record failure and recovery. Approved/baselined changes require a change request and new revisions.

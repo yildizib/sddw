@@ -14,18 +14,40 @@ permissions:
 
 jobs:
   boundaries-and-installers:
-    name: Validate core boundaries and installers
-    runs-on: ubuntu-latest
+    name: Validate on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Validate core and adapter boundaries
-        run: tools/validate-boundaries.sh
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install ShellCheck on Ubuntu
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install --yes shellcheck
+
+      - name: Install ShellCheck on macOS
+        if: runner.os == 'macOS'
+        run: brew install shellcheck
 
       - name: Validate shell scripts
-        run: bash -n bin/install.sh adapters/claude/install.sh adapters/opencode/install.sh tools/install-adapter.sh tools/test-installers.sh
+        run: git ls-files -z '*.sh' | xargs -0 -n 1 bash -n
+
+      - name: Run ShellCheck
+        run: git ls-files -z '*.sh' | xargs -0 shellcheck
+
+      - name: Validate core and adapter boundaries
+        run: tools/validate-boundaries.sh
 
       - name: Smoke test global snapshot installers
         run: bash tools/test-installers.sh

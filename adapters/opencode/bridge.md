@@ -20,6 +20,8 @@ This file maps the platform-independent core interaction contract to OpenCode.
 - Design and Taskify: `/sddw-design-and-taskify`
 - Implement: `/sddw-implement`
 - Verify: `/sddw-verify`
+- Review: `/sddw-review`
+- Release: `/sddw-release`
 - Self-Improve: `/sddw-self-improve`
 - Chat: `/sddw-chat`
 - Help: `/sddw-help`

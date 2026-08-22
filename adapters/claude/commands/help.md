@@ -17,5 +17,11 @@ argument-hint: "[list | status <feature-name>]"
 # COMMON RULES
 @~/.claude/sddw/core/instructions/common.md
 
+# TRUST MODEL
+@~/.claude/sddw/core/security/trust-model.md
+
 # INSTRUCTIONS
 @~/.claude/sddw/core/instructions/help.md
+
+# SPECS
+@~/.claude/sddw/core/specs/feature-manifest.md

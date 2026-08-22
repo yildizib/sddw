@@ -1,105 +1,44 @@
 # Design Questionnaire
 
-Three-phase dialog to gather enough context to produce `design.md`.
+Develop a traceable design one concern at a time. In `--auto`, draft from validated evidence but never grant approvals, waivers, or risk acceptance.
 
----
+## Preflight
 
-## Phase 1: Discover
+Present the exact requirements revision/hash and human approval, feature-manifest revision/status, baseline SHA, trace state, and code-analysis freshness. If an input is missing, stale, superseded, unapproved, or conflicting, stop and identify the single blocking resolution.
 
-*In `--auto`: perform discovery fully autonomously.*
+If a design already exists, ask one question appropriate to its state: abort, continue an unapproved draft as a new revision, or initiate a change request for an approved/baselined design. Never offer overwrite.
 
-Understand the implementation landscape. The requirements spec is already written — now understand how it maps to the codebase. One question at a time.
+## Discover
 
-**Step 1 — Open:**
-> "I've read the requirements. Before I design the tasks, is there anything specific about the architecture or approach you have in mind?"
+Ask one question at a time about the highest-value unknown, waiting after each:
 
-Wait for response.
+- architecture and integration boundaries;
+- data ownership and migration;
+- interface and compatibility obligations;
+- security/privacy and operational risks;
+- rollback or forward-fix constraints;
+- observability signals, thresholds, and ownership.
 
-**Step 2+** — Follow up based on their answer. Pick ONE at a time:
-- **Surface assumptions** — "are you thinking this lives in [module] or should it be separate?"
-- **Identify constraints** — "any libraries or patterns you want to use or avoid?"
-- **Clarify integration** — "how should this connect to [existing feature]?"
+Base options on repository evidence and show evidence before asking the question.
 
-Use `structured question mechanism` with 2-4 concrete options based on what you see in the codebase (or code-analysis.md if available).
+## Research and Propose
 
-**Context checklist** (background, not a script — weave naturally):
-- [ ] Any preferred architectural approach
-- [ ] Known constraints (libraries, patterns, performance)
-- [ ] Integration points the user cares about
-- [ ] Any prior art or reference implementations
+Present exactly one design concern or decision at a time. Assign stable IDs and include traced FR/NFR/AC IDs, evidence, alternatives, consequences, and risks.
 
----
+Cover applicable concerns:
 
-## Phase 2: Research & Propose
+1. `DES-###` architecture components and flows
+2. `DES-###` data models and migration/data conversion
+3. `DES-###` interfaces and backward/forward compatibility
+4. `ADR-###` decisions with chosen and rejected alternatives
+5. `RISK-###` threats, mitigations, triggers, owners, and residual risk
+6. rollback/forward-fix behavior
+7. observability signals, thresholds, alerts, dashboards, and response owner
 
-Research the design and propose ONE section at a time. Wait for approval before moving to the next. If `.sddw/code-analysis.md` exists, use it as context. Otherwise, scan the codebase as needed.
+After each proposal, ask one approval or correction question. Human acceptance of a proposal does not bypass formal ADR, risk, waiver, or artifact approval records.
 
-### 2.1 Research
+## Generate
 
-- **Codebase analysis** — scan for relevant patterns, interfaces, flows, conventions (use code-analysis.md if available, supplement as needed)
-- **Dependency analysis** — what modules are affected, what's the impact radius
-- **Web search** — if the feature involves unfamiliar tech, research best practices and packages
+Present one final generation confirmation with design IDs, coverage, ADRs, risks, migration, compatibility, rollback, observability, and unresolved items. Then stage and validate the design, ADRs, traceability changes, risk changes, feature-manifest update, and run-manifest result.
 
-### 2.2 Propose (one section at a time)
-
-Present each section separately. Wait for user approval before proposing the next.
-
-*In `--auto`: decide all sections autonomously.*
-
-**Section 1 — Architecture:**
-Present the architecture overview as context text, then use `structured question mechanism` with options:
-- Option 1: [Proposed architecture — description, data flow]
-- Option 2: [Alternative approach — description]
-Question: "Which architecture do you prefer, or would you adjust?"
-
-Wait for response. Lock in approved architecture.
-
-**Section 2 — Data Models:**
-> "I'd need these entities:"
-> - [Entity]: [key fields and types]
-> "This requires a migration. Rollback strategy: [description]."
-> "Agree, or would you change the schema?"
-
-Wait for response. Lock in approved models.
-
-**Section 3 — Interface Contracts:**
-> "API endpoints:"
-> - [METHOD] [path]: [description, input, output, errors]
-> "Internal interfaces:"
-> - [Module.method(params) -> return]: [purpose]
-> "Agree with these contracts?"
-
-Wait for response. Lock in approved contracts.
-
-**Section 4 — Design Decisions:**
-For each non-obvious decision, present ONE at a time using `structured question mechanism` with options:
-- **[Option A] (Recommended)** — [pros]. [cons]. Use `preview` for code snippets if helpful.
-- **[Option B]** — [pros]. [cons].
-Question: "Decision: [title]. I recommend option 1 because [rationale]. Your call?"
-
-Wait for response. Lock in decision. Move to next decision if any.
-
-### Rules for proposing:
-- SHALL propose ONE section at a time, wait for approval, then move to next
-- SHALL base proposals on actual codebase analysis (or code-analysis.md), not assumptions
-- SHALL present architecture alternatives when non-obvious
-- SHALL include rationale for every design decision
-- User can accept, modify, or propose their own approach for any section
-
----
-
-## Phase 3: Confirm & Generate
-
-Once all sections are approved:
-
-> "Ready to generate `design.md`? Here's what I'll write:"
-> - Architecture overview
-> - Data models
-> - Interface contracts
-> - Design decisions
-
-User confirms → generate `design.md` to `.sddw/<feature-name>/design/design.md` following the `specs/design.md` template.
-
-*In `--auto`: generate directly.*
-
-If user wants changes → return to the relevant section in Phase 2.
+Publish as `in-review` only when every FR/NFR has design coverage or an explicit disposition and all references/hashes agree. Request formal human design/ADR approval and record its platform-verifiable reference. Changes to an approved design require a change request and new revision; never mutate or silently overwrite it.

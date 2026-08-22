@@ -1,43 +1,42 @@
-# Code Analysis Step Instructions
+# Code Analysis Instructions
 
-Analyse the existing codebase to extract patterns, interfaces, flows, and conventions. This is an optional step between Requirements and Design. It grounds design decisions in reality rather than assumptions.
-
-## Goal
-
-Produce a shared, project-level codebase analysis.
+Analyse the actual target codebase and record reproducible evidence that can ground feature design.
 
 ## Prerequisites
 
-Read the requirements spec produced by Step 1:
-`<resolved-sddw-path>/<feature-name>/requirements.md`
+Load the feature manifest and its exact requirements revision. Requirements SHALL be human-approved, current, hash-valid, and bound to the same absolute project root and baseline. A missing, stale, unapproved, or conflicting input blocks analysis.
 
-If the requirements spec does not exist, inform the user and suggest starting the Requirements step for this feature first.
-
-Use the Project path from the requirements spec as the target codebase for analysis.
+Create a run manifest at run start. Record the full baseline SHA and all input revisions/hashes.
 
 ## Process
 
-Follow the three-phase flow defined in the questionnaire:
+1. **Scope** - ask one question at a time about relevant areas, exclusions, conventions, and known hazards. In `--auto`, determine scope from requirements and repository evidence.
+2. **Scan** - inspect relevant architecture, interfaces, flows, dependencies, conventions, tests, policies, and reusable components at the recorded baseline.
+3. **Publish** - validate findings, publish a new or regenerated code-analysis revision, and update the feature manifest and run manifest with its hash and result.
 
-1. **Discover** — Ask the user what areas of the codebase are most relevant, whether there are known conventions or gotchas. *In `--auto`: perform discovery fully autonomously.*
+## Evidence Rules
 
-2. **Research & Propose** — Scan the codebase for patterns, interfaces, flows, and conventions relevant to the feature. Propose each section with findings. User accepts, modifies, or provides their own input. *In `--auto`: decide all sections autonomously.*
+- Record the full code baseline SHA, scan time, scanner/tool identity, explicitly scanned paths, and skipped/excluded paths with reasons.
+- Every material finding SHALL cite resolvable evidence such as `path:line`, symbol, policy file, command result, or immutable URL.
+- Assign each finding a confidence level with rationale and a freshness statement tied to the baseline and observation time.
+- Distinguish observed facts from inference and unknowns. SHALL NOT present an assumption as repository fact.
+- Identify reusable components, dependency direction, integration boundaries, tests affected by interface changes, and conventions implementation must follow.
+- A baseline change or changed evidence makes affected findings stale; do not silently carry them forward.
 
-3. **Confirm & Generate** — Summarise what will be written. User confirms. Write the spec to `.sddw/code-analysis.md`. *In `--auto`: generate directly.*
+## Publication and Revision
 
-## Rules
+- Preserve project-level analysis that remains valid; add feature-relevant evidence without deleting unrelated valid findings.
+- If the shared analysis is approved or baselined, SHALL NOT edit it in place. Use a change request and a new revision, preserve superseded history, and invalidate dependent artifacts where applicable.
+- Update `feature-manifest.md` with the analysis revision/hash/status/inputs and update the run manifest with actual actions, scanned/skipped scope, output hash, and success, failure, or blocked state.
+- Interactive mode requires confirmation before publication. `--auto` may publish a draft revision but cannot grant a human approval or waiver.
 
-- SHALL analyse the actual codebase, not assume patterns
-- SHALL identify reusable components before proposing new ones in design
-- SHALL document conventions the implementation must follow
-- SHALL NOT propose patterns that conflict with existing codebase conventions
-- SHALL note dependency direction between existing modules
-- If `.sddw/code-analysis.md` already exists, SHALL review and update it rather than recreate
-- SHALL add new sections relevant to the current feature without removing existing content
-- SHALL NOT proceed to generation without user approval (interactive mode). `--auto` mode may proceed without approval.
+## Clean Transition
+
+Apply current metadata and evidence rules only when generating or regenerating analysis. Do not rewrite unchanged legacy analysis merely to migrate its format.
 
 ## Output
 
-```
-.sddw/code-analysis.md
+```text
+<resolved-sddw-path>/code-analysis.md
+<resolved-sddw-path>/<feature-name>/runs/run-<YYYYMMDDTHHMMSSZ>-code-analysis.md
 ```

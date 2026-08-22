@@ -170,24 +170,25 @@ git switch develop
 git pull --ff-only origin develop
 ```
 
-Use this branch naming format:
+Use one of `feature`, `fix`, `bugfix`, `chore`, `hotfix`, or `release` and include
+the issue number at the end:
 
 ```text
-issue-<issue-number>-<kebab-case-issue-title>
+<type>/<kebab-case-issue-title>-<issue-number>
 ```
 
 Examples:
 
 ```text
-issue-24-add-opencode-adapter
-issue-25-fix-install-script
-issue-26-document-release-policy
+feature/add-opencode-adapter-24
+fix/install-script-collision-25
+chore/document-release-policy-26
 ```
 
 Create and publish the branch:
 
 ```bash
-BRANCH="issue-${ISSUE_NUMBER}-add-opencode-adapter"
+BRANCH="feature/add-opencode-adapter-${ISSUE_NUMBER}"
 
 git switch -c "$BRANCH" origin/develop
 git push --set-upstream origin "$BRANCH"
@@ -218,6 +219,32 @@ git diff --check
 Run the project-specific test and validation commands documented by the
 project. If no automated test suite exists, document the manual validation
 performed in the pull request.
+
+### Using SDDW During Implementation
+
+SDDW supplements this repository's contribution workflow; it does not replace
+it. The issue, branch, commit, pull request, review, merge, and release rules in
+this document remain authoritative.
+
+Before implementation, SDDW discovers repository-local conventions from this
+document and other project policy, build, test, CI, and configuration files. It
+records the applicable commands and criteria in the feature quality plan and
+binds work to current manifest revisions. Contributors must keep requirements,
+design, tasks, traceability, risks, completion reports, verification evidence,
+and change requests current when their change affects them.
+
+Implementation completion does not authorize a commit. SDDW may inspect Git
+state and prepare a proposed commit message, but it commits only when the user
+explicitly authorizes that action. Any authorized commit must still follow the
+branch and commit rules below. Pushes, pull requests, merges, tags, releases,
+deployments, and other remote side effects require separate explicit
+authorization and the repository's normal human review gates.
+
+A successful Verify step is necessary evidence, not permission to merge or
+release. The feature must also receive an independent Review for the exact
+artifact revisions and code baseline. Release readiness planning does not mean
+a release occurred; actual release and post-release results must be recorded
+from attributable evidence after the repository release process is performed.
 
 ## 5. Commit Changes
 
@@ -290,6 +317,9 @@ A pull request must include:
 - Tests or manual validation results
 - Known limitations or follow-up work
 - Any required documentation updates
+- Relevant SDDW artifact revisions and end-to-end traceability
+- Quality-gate evidence and the independent review result before merge
+- Open risks, human-approved waivers, and release impact
 
 Inspect the pull request:
 
@@ -408,7 +438,7 @@ Prepare and review the release on `develop`. For a release that needs no
 release-only changes, open a release pull request directly:
 
 ```bash
-gh pr create --base main --head develop --title "Release v1.0.0" --body "## Release v1.0.0\n\nThis is the first stable release.\n\nReview the complete change history and confirm that all required validation has passed."
+gh pr create --base main --head develop --title "Release v1.0.0" --body-file release-pr.md
 ```
 
 After the release pull request is approved and merged, create the annotated

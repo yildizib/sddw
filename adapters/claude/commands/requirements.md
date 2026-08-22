@@ -19,6 +19,9 @@ If no feature name is provided, ask the user to describe the feature they want t
 # COMMON RULES
 @~/.claude/sddw/core/instructions/common.md
 
+# TRUST MODEL
+@~/.claude/sddw/core/security/trust-model.md
+
 # INSTRUCTIONS
 @~/.claude/sddw/core/instructions/requirements.md
 
@@ -27,6 +30,11 @@ If no feature name is provided, ask the user to describe the feature they want t
 
 # SPECS
 @~/.claude/sddw/core/specs/requirements.md
+@~/.claude/sddw/core/specs/feature-manifest.md
+@~/.claude/sddw/core/specs/traceability-matrix.md
+@~/.claude/sddw/core/specs/risk-register.md
+@~/.claude/sddw/core/specs/quality-plan.md
+@~/.claude/sddw/core/specs/run-manifest.md
 
 # NEXT STEP
 After the user approves the requirements, suggest:

@@ -17,6 +17,9 @@ argument-hint: "<feature-name> [--task <task-number>] [--auto]"
 # COMMON RULES
 @~/.claude/sddw/core/instructions/common.md
 
+# TRUST MODEL
+@~/.claude/sddw/core/security/trust-model.md
+
 # INSTRUCTIONS
 @~/.claude/sddw/core/instructions/implement.md
 
@@ -24,8 +27,15 @@ argument-hint: "<feature-name> [--task <task-number>] [--auto]"
 @~/.claude/sddw/core/questionnaires/implement.md
 
 # SPECS
+@~/.claude/sddw/core/specs/requirements.md
+@~/.claude/sddw/core/specs/design.md
 @~/.claude/sddw/core/specs/design-task.md
 @~/.claude/sddw/core/specs/task-completion.md
+@~/.claude/sddw/core/specs/feature-manifest.md
+@~/.claude/sddw/core/specs/change-request.md
+@~/.claude/sddw/core/specs/traceability-matrix.md
+@~/.claude/sddw/core/specs/quality-plan.md
+@~/.claude/sddw/core/specs/run-manifest.md
 
 # NEXT STEP
 After completing a task, suggest the next unblocked task:

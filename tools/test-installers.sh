@@ -51,8 +51,13 @@ test -f "$HOME_ROOT/.config/opencode/commands/unrelated.md" || fail "OpenCode in
 shopt -s nullglob
 claude_commands=("$HOME_ROOT/.claude/commands/sddw"/*.md)
 opencode_commands=("$HOME_ROOT/.config/opencode/commands"/sddw-*.md)
-test "${#claude_commands[@]}" -eq 10 || fail "Claude command count is not 10"
-test "${#opencode_commands[@]}" -eq 10 || fail "OpenCode command count is not 10"
+expected_command_count=0
+while IFS= read -r step || [ -n "$step" ]; do
+    [ -n "$step" ] || continue
+    expected_command_count=$((expected_command_count + 1))
+done < "$SOURCE_ROOT/core/steps.txt"
+test "${#claude_commands[@]}" -eq "$expected_command_count" || fail "Claude command count does not match core/steps.txt"
+test "${#opencode_commands[@]}" -eq "$expected_command_count" || fail "OpenCode command count does not match core/steps.txt"
 
 for command in "${claude_commands[@]}"; do
     while IFS= read -r reference; do

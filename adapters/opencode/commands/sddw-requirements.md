@@ -3,6 +3,8 @@ description: Generate requirements for a feature with user stories, functional r
 agent: build
 ---
 
+<!-- managed-by: sddw -->
+
 Feature and arguments: $ARGUMENTS
 
 Read and follow these files in order:

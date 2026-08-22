@@ -19,7 +19,7 @@
 Platform-independent Spec-Driven Development Workflow with adapters for
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and OpenCode.
 
-- Write **requirements**, optionally **analyse the codebase**, then **design** architecture, then **taskify** (as hybrid task files referencing `design.md`), then **implement** each task separately, then **verify** the result, then **self-improve** the workflow
+- Write **requirements**, optionally **analyse the codebase**, then **design** architecture, then **taskify** (as hybrid task files referencing `design.md`), then **implement** each task separately, then **verify** the result, then **self-improve** by proposing evidence-based workflow diffs
 - The agent guides you through every step — researches, proposes options, confirms your decisions
 - Every step produces exactly one spec type. Every step reads specs from previous steps.
 - `/clear` context between steps — each step works within a focused context window
@@ -43,31 +43,67 @@ Detailed specifications reduce AI code errors by up to 50% (Piskala, 2026), secu
 
 ## Install
 
+Clone the source repository outside the platform configuration directories:
+
 ```bash
-git clone https://github.com/yildizib/sddw.git ~/.claude/sddw
-cd ~/.claude/sddw && bash bin/install.sh
+git clone https://github.com/yildizib/sddw.git ~/sddw
+cd ~/sddw
 ```
 
-### OpenCode
-
-Install the OpenCode adapter globally:
+Choose install or uninstall and then select Claude, OpenCode, or both:
 
 ```bash
-git clone https://github.com/yildizib/sddw.git ~/.config/opencode/sddw
-cd ~/.config/opencode/sddw && bash adapters/opencode/install.sh
+bash bin/install.sh
 ```
 
-For local development, install the shared core and commands from a checkout:
+For non-interactive use, provide the action and adapter target:
 
 ```bash
-git clone https://github.com/yildizib/sddw.git
-cd sddw && bash adapters/opencode/install.sh --local
+bash bin/install.sh install all
+bash bin/install.sh uninstall opencode
 ```
 
-To install OpenCode command wrappers into a specific project:
+### Direct Adapter Installers
+
+Install only the Claude adapter globally:
 
 ```bash
-bash adapters/opencode/install.sh --local --project /path/to/project
+bash adapters/claude/install.sh
+```
+
+This copies an isolated runtime snapshot to `~/.claude/sddw` and installs the
+commands under `~/.claude/commands/sddw`.
+
+Install only the OpenCode adapter globally:
+
+```bash
+bash adapters/opencode/install.sh
+```
+
+This copies a separate runtime snapshot to `~/.config/opencode/sddw` and
+installs the commands under `~/.config/opencode/commands`.
+
+The installers never create runtime Git clones or source symlinks. Source core
+and adapter command changes affect an installed snapshot only after its
+installer is run again. Claude and OpenCode snapshots can be updated
+independently.
+
+Unknown command or runtime collisions are rejected. Use `--force` only when an
+existing conflicting sddw installation may be replaced:
+
+```bash
+bash adapters/opencode/install.sh --force
+```
+
+The first migration from a pre-snapshot clone or symlink installation also
+requires `--force` when legacy command wrappers already exist. Later snapshot
+updates are managed automatically.
+
+Uninstall only the files managed by an adapter:
+
+```bash
+bash adapters/claude/install.sh --uninstall
+bash adapters/opencode/install.sh --uninstall
 ```
 
 Run an installed OpenCode command from the project directory:
@@ -82,12 +118,8 @@ OpenCode's CLI `--auto` flag approves tool permissions. The second `--auto`,
 inside the command message after `--`, enables the sddw workflow's autonomous
 mode.
 
-For development (symlink from local repo):
-
-```bash
-git clone https://github.com/yildizib/sddw.git
-cd sddw && bash bin/install.sh --local
-```
+Restart Claude Code or OpenCode after installing or updating an adapter so the
+new command definitions are loaded.
 
 ## Interaction Modes
 
@@ -250,17 +282,17 @@ Analyse the completed feature's execution across all workflow steps. Identify wh
 
 - **Analyse** — extract signals: deviations, difficulties, remediation task origins, spec gaps
 - **Diagnose** — classify findings by workflow step, identify patterns, propose improvements
-- **Apply** — present proposals with diff previews, apply approved changes to workflow files
+- **Report** — record proposals with concrete diff previews without modifying workflow files
 
 Output:
 
 ```
 .sddw/<feature-name>/
 └── self-improve/
-    └── report.md    # findings, proposals, applied/skipped changes
+    └── report.md    # findings and proposals with diff previews
 ```
 
-Each improvement targets a specific workflow component (instruction, questionnaire, or spec) with a concrete diff. The workflow evolves with every feature — gaps found during one feature prevent the same issues in the next.
+Each improvement targets a specific workflow component (instruction, questionnaire, or spec) with a concrete diff. Maintainers can review and apply those proposals separately.
 
 ### Chat
 

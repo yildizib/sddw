@@ -5,7 +5,7 @@ Written after the self-improve step analyses a completed feature. Stored at `.sd
 **Location:** `.sddw/<feature-name>/self-improve/report.md`
 
 **Format:**
-```
+````
 # Improvement Report: <feature-name>
 
 ## Summary
@@ -13,7 +13,7 @@ Written after the self-improve step analyses a completed feature. Stored at `.sd
 - **Feature result:** [PASS | FAIL | PARTIAL] (from verification)
 - **Signals:** [deviations] deviations, [difficulties] difficulties, [remediation] remediation tasks
 - **Findings:** [count] across [steps affected]
-- **Proposals:** [total] proposed, [applied] applied, [skipped] skipped
+- **Proposals:** [total] proposed with diff previews
 
 ## Lifecycle Overview
 - **Requirements:** [complete] — [N] FRs, [N] acceptance scenarios
@@ -58,27 +58,27 @@ Written after the self-improve step analyses a completed feature. Stored at `.sd
 ### Verification Step
 - **F-04:** [description]
 
-## Improvements
+## Improvement Proposals
 
-### Applied
-[List of applied improvements]
-- **IMP-01** ([type]: [target file]) — [what was changed]
-
-### Skipped
-[List of skipped improvements with reason]
-- **IMP-03** ([type]: [target file]) — [reason skipped]
-
-### Proposed (not applied)
-[List of proposals the user chose not to apply]
-- **IMP-02** ([type]: [target file]) — [proposal summary]
-```
+### IMP-01: [title]
+- **Type:** [instruction | questionnaire | spec | process]
+- **Target:** [core-relative target file or process]
+- **Step:** [affected workflow step]
+- **Finding:** [evidence-based finding]
+- **Proposal:** [proposal summary]
+- **Diff preview:**
+  ```diff
+  - [old text]
+  + [new text]
+  ```
+````
 
 **Rules:**
-- SHALL be written after all analysis and approval phases complete
+- SHALL be written after analysis and proposal review complete
 - SHALL base all findings on evidence from artifacts — reference specific deviations, difficulties, remediation tasks, or test results
 - SHALL classify every finding by the workflow step where the issue originated
-- SHALL include the full list of proposals regardless of whether they were applied
-- SHALL record which proposals were applied, skipped, or declined
+- SHALL include the full list of proposals and diff previews
+- SHALL NOT modify workflow files
 - SHALL be concise — this is a report, not a narrative
 - SHALL NOT include speculative findings without artifact evidence
 - Re-running self-improve SHALL overwrite the previous report
@@ -91,7 +91,7 @@ Written after the self-improve step analyses a completed feature. Stored at `.sd
 > - **Feature result:** FAIL (from verification)
 > - **Signals:** 3 deviations, 1 difficulty, 2 remediation tasks
 > - **Findings:** 3 across 2 steps
-> - **Proposals:** 3 proposed, 2 applied, 1 skipped
+> - **Proposals:** 1 proposed with a diff preview
 >
 > ## Lifecycle Overview
 > - **Requirements:** complete — 3 FRs, 7 acceptance scenarios
@@ -134,14 +134,15 @@ Written after the self-improve step analyses a completed feature. Stored at `.sd
 > ### Verification Step
 > - No issues identified
 >
-> ## Improvements
+> ## Improvement Proposals
 >
-> ### Applied
-> - **IMP-01** (questionnaire: `questionnaires/design.md`) — Added a prompt to check whether FR acceptance criteria contain measurable thresholds (time, size, count) and carry them into task done criteria.
-> - **IMP-02** (instruction: `instructions/requirements.md`) — Added guidance to use unambiguous boundary language in acceptance criteria (e.g., "strictly greater than" vs "at least").
->
-> ### Skipped
-> - **IMP-03** (instruction: `instructions/code-analysis.md`) — Proposed adding ORM-specific quirks detection. Skipped: target text in code-analysis.md had changed since analysis.
->
-> ### Proposed (not applied)
-> - None — all proposals were either applied or skipped due to conflicts.
+> ### IMP-01: Carry measurable thresholds into task criteria
+> - **Type:** questionnaire
+> - **Target:** `core/questionnaires/design.md`
+> - **Step:** design
+> - **Finding:** The 60s SLA from FR-01 was not carried into the task done criteria.
+> - **Proposal:** Prompt design review to preserve measurable thresholds.
+> - **Diff preview:**
+>   ```diff
+>   + Check each acceptance criterion for measurable thresholds and carry them into task done criteria.
+>   ```

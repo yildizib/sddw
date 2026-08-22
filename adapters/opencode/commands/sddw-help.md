@@ -3,6 +3,8 @@ description: Show the sddw workflow overview or feature status.
 agent: build
 ---
 
+<!-- managed-by: sddw -->
+
 Arguments: $ARGUMENTS
 
 Read and follow these files in order:

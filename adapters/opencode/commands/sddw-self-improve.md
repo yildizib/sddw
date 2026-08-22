@@ -3,6 +3,8 @@ description: Analyse a completed feature lifecycle and propose workflow improvem
 agent: build
 ---
 
+<!-- managed-by: sddw -->
+
 Feature and arguments: $ARGUMENTS
 
 Read and follow these files in order:

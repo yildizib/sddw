@@ -39,7 +39,7 @@ For each feature, report the status of:
 - Generated tasks and total task count
 - Completed task reports and completion count
 - Verification report and result
-- Self-improve report and applied/skipped counts
+- Self-improve report and proposal count
 
 Use file existence for status detection. Do not assume a step is complete from
 another step's output.

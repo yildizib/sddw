@@ -4,10 +4,15 @@ description: Analyse feature execution to identify workflow gaps and propose imp
 argument-hint: "<feature-name> [--auto]"
 ---
 
+<!-- managed-by: sddw -->
+
 <feature_name> #$ARGUMENTS </feature_name>
 
 # ADAPTER BRIDGE
 @~/.claude/sddw/adapters/claude/bridge.md
+
+# INTERACTION CONTRACT
+@~/.claude/sddw/core/interaction.md
 
 # COMMON RULES
 @~/.claude/sddw/core/instructions/common.md
@@ -25,7 +30,6 @@ argument-hint: "<feature-name> [--auto]"
 
 # NEXT STEP
 After the improvement report is generated:
-- If improvements were proposed: present each proposed change and ask the user which to apply.
-- After applying approved changes, suggest:
-  > Workflow updated. Next feature will benefit from these improvements.
+- If improvements were proposed: summarise the report and its diff previews without modifying workflow files.
+- Suggest that maintainers review and apply accepted proposals separately.
 - If no improvements identified: congratulate and summarise the feature's clean execution.

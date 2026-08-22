@@ -1,7 +1,9 @@
 ---
 description: Analyse an existing codebase for patterns, interfaces, flows, and conventions.
-agent: explore
+agent: build
 ---
+
+<!-- managed-by: sddw -->
 
 Feature and arguments: $ARGUMENTS
 

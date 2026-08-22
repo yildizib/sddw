@@ -4,7 +4,7 @@ Analyse a completed feature's execution across all workflow steps. Identify gaps
 
 ## Goal
 
-Turn execution experience into workflow improvements. Each feature execution is a learning opportunity — find what went wrong (or could be better) and propose specific changes to instructions, questionnaires, or specs so that future features avoid the same issues.
+Turn execution experience into workflow improvement proposals. Each feature execution is a learning opportunity — find what went wrong (or could be better) and propose specific diffs to instructions, questionnaires, or specs so that maintainers can apply them deliberately.
 
 ## Prerequisites
 
@@ -25,9 +25,9 @@ Also read the current sddw workflow components that may be improved:
 
 | Component | Path |
 |-----------|------|
-| Instructions | `<workflow-root>/instructions/*.md` |
-| Questionnaires | `<workflow-root>/questionnaires/*.md` |
-| Specs | `<workflow-root>/specs/*.md` |
+| Instructions | `<workflow-root>/core/instructions/*.md` |
+| Questionnaires | `<workflow-root>/core/questionnaires/*.md` |
+| Specs | `<workflow-root>/core/specs/*.md` |
 
 ## Process
 
@@ -35,9 +35,9 @@ Follow the three-phase flow defined in the questionnaire:
 
 1. **Analyse** — Load all artifacts and extract signals: deviations, difficulties, remediation task origins, test gaps, spec ambiguities. *In `--auto`: analyse fully autonomously.*
 
-2. **Diagnose** — Classify findings by workflow step and component. Identify patterns and root causes. Propose specific improvements. *In `--auto`: propose autonomously — always pause for approval before applying changes.*
+2. **Diagnose** — Classify findings by workflow step and component. Identify patterns and root causes. Propose specific improvements with diff previews. *In `--auto`: propose autonomously.*
 
-3. **Apply** — Present improvement proposals. User approves which to apply. Apply approved changes to workflow files. Generate improvement report. *All modes: user approval required before modifying workflow files.*
+3. **Report** — Present the proposals and generate the improvement report. The report is advisory and SHALL NOT modify workflow files.
 
 ---
 
@@ -102,9 +102,9 @@ Signals to check:
 
 | Type | Target | Example |
 |------|--------|---------|
-| **Instruction improvement** | `instructions/*.md` | "Add a rule to check boundary conditions in acceptance criteria" |
-| **Questionnaire improvement** | `questionnaires/*.md` | "Add a question about performance constraints during requirements" |
-| **Spec improvement** | `specs/*.md` | "Add a Performance section to the task file format" |
+| **Instruction improvement** | `core/instructions/*.md` | "Add a rule to check boundary conditions in acceptance criteria" |
+| **Questionnaire improvement** | `core/questionnaires/*.md` | "Add a question about performance constraints during requirements" |
+| **Spec improvement** | `core/specs/*.md` | "Add a Performance section to the task file format" |
 | **Process improvement** | Process/workflow suggestion | "Code analysis should be required, not optional, for existing codebases" |
 
 ## Improvement Proposal Format
@@ -126,10 +126,10 @@ Each proposal SHALL include:
 - SHALL classify every finding by workflow step origin
 - SHALL propose concrete, actionable improvements — not vague suggestions
 - SHALL include diff previews for file changes so the user can evaluate precisely
-- SHALL NOT apply changes to workflow files without user approval — even in `--auto` mode
+- SHALL NOT modify workflow files; include proposed changes as diff previews in the report
 - SHALL NOT propose improvements unrelated to the analysed feature's execution
 - SHALL NOT modify the feature's own artifacts (requirements.md, task files, etc.)
-- SHALL generate the improvement report regardless of whether changes are applied
+- SHALL generate the improvement report even when the user requests no proposal adjustments
 - SHALL keep proposals minimal — fix the specific gap, don't redesign the workflow
 
 ## Output
@@ -139,4 +139,4 @@ Each proposal SHALL include:
 └── report.md
 ```
 
-And optionally, modifications to workflow files in `<workflow-root>/` (only with user approval).
+The improvement report is the only output. Maintainers may review and apply its diff previews separately.

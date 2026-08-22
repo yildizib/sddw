@@ -4,10 +4,15 @@ description: Implement tasks from the design spec following TDD and existing cod
 argument-hint: "<feature-name> [--task <task-number>] [--auto]"
 ---
 
+<!-- managed-by: sddw -->
+
 <feature_name> #$ARGUMENTS </feature_name>
 
 # ADAPTER BRIDGE
 @~/.claude/sddw/adapters/claude/bridge.md
+
+# INTERACTION CONTRACT
+@~/.claude/sddw/core/interaction.md
 
 # COMMON RULES
 @~/.claude/sddw/core/instructions/common.md

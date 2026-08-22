@@ -25,21 +25,7 @@ jobs:
         run: tools/validate-boundaries.sh
 
       - name: Validate shell scripts
-        run: bash -n bin/install.sh adapters/claude/install.sh adapters/opencode/install.sh
+        run: bash -n bin/install.sh adapters/claude/install.sh adapters/opencode/install.sh tools/install-adapter.sh tools/test-installers.sh
 
-      - name: Smoke test local installers
-        shell: bash
-        run: |
-          set -euo pipefail
-          test_root="$(mktemp -d)"
-          trap 'rm -rf "$test_root"' EXIT
-
-          mkdir -p "$test_root/home" "$test_root/project"
-          HOME="$test_root/home" bash adapters/claude/install.sh --local
-          HOME="$test_root/home" bash adapters/opencode/install.sh --local --project "$test_root/project"
-
-          shopt -s nullglob
-          claude_commands=("$test_root/home/.claude/commands/sddw"/*.md)
-          opencode_commands=("$test_root/project/.opencode/commands"/*.md)
-          test "${#claude_commands[@]}" -eq 10
-          test "${#opencode_commands[@]}" -eq 10
+      - name: Smoke test global snapshot installers
+        run: bash tools/test-installers.sh

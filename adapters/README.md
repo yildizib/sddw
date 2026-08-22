@@ -12,6 +12,11 @@ workflow semantics.
 - Preserve the shared `.sddw/` artifact layout.
 - Run adapter-specific smoke and conformance checks.
 
+Installers copy the complete core and only the selected adapter runtime files
+from the current checkout into a platform-specific user-global snapshot.
+Installed command wrappers remain separate from the copied core, and Claude
+and OpenCode never share a runtime snapshot.
+
 ## Adding an Adapter
 
 Create a new directory under `adapters/` with:

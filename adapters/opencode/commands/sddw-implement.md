@@ -3,6 +3,8 @@ description: Implement one task from a feature design using the project's testin
 agent: build
 ---
 
+<!-- managed-by: sddw -->
+
 Feature and arguments: $ARGUMENTS
 
 Read and follow these files in order:

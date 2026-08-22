@@ -3,6 +3,8 @@ description: Generate a feature design and dependency-ordered task files in one 
 agent: build
 ---
 
+<!-- managed-by: sddw -->
+
 Feature and arguments: $ARGUMENTS
 
 Read and follow these files in order:

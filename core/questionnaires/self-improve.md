@@ -2,7 +2,7 @@
 
 Three-phase dialog for analysing feature execution and proposing workflow improvements.
 
-**All modes:** Applying changes to workflow files always requires user approval.
+**All modes:** Self-improve is advisory and never modifies workflow files.
 
 ---
 
@@ -58,7 +58,7 @@ Wait for response.
 
 ## Phase 2: Diagnose
 
-*In `--auto`: diagnose autonomously, still present proposals for approval.*
+*In `--auto`: diagnose and propose autonomously.*
 
 ### 2.1 Pattern Analysis
 
@@ -93,34 +93,11 @@ For each finding, propose a concrete improvement:
 > + [new text]
 > ```
 
-Present all proposals as a batch.
-
-Use `structured question mechanism`:
-- "Apply all improvements (Recommended)"
-- "Select which to apply"
-- "Skip — generate report only"
-
-Wait for response.
-
-If "Select which to apply": use `structured question mechanism` with `allow multiple selections`, listing each IMP-ID as an option.
-
-Wait for response.
+Present all proposals as a batch. In interactive mode, ask whether any proposal needs clarification or adjustment before generating the report. Do not offer to apply changes.
 
 ---
 
-## Phase 3: Apply & Report
-
-### 3.1 Apply Changes
-
-For each approved improvement:
-1. Read the target file
-2. Apply the change
-3. Confirm: > "Applied IMP-01 to [file]"
-
-If a change conflicts with the current file content (e.g., the target text was already modified), warn and skip:
-> "IMP-03 skipped — target text in [file] has changed since analysis."
-
-### 3.2 Generate Report
+## Phase 3: Report
 
 Generate the improvement report to `.sddw/<feature-name>/self-improve/report.md`.
 
@@ -128,5 +105,4 @@ Present a summary:
 > "Improvement report generated."
 > - Findings: [N] across [M] steps
 > - Proposals: [N] total
-> - Applied: [N]
-> - Skipped: [N]
+> - Workflow files modified: 0

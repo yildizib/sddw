@@ -3,6 +3,8 @@ description: Break a feature design into dependency-ordered implementation tasks
 agent: build
 ---
 
+<!-- managed-by: sddw -->
+
 Feature and arguments: $ARGUMENTS
 
 Read and follow these files in order:

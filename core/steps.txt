@@ -1,5 +1,8 @@
 requirements
 code-analysis
+design
+taskify
+design_and_taskify
 implement
 verify
 self-improve

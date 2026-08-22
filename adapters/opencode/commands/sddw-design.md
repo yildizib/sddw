@@ -3,6 +3,8 @@ description: Generate the cross-cutting design artifact for a feature.
 agent: build
 ---
 
+<!-- managed-by: sddw -->
+
 Feature and arguments: $ARGUMENTS
 
 Read and follow these files in order:

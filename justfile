@@ -1,25 +1,21 @@
 # sddw development commands
 
-# Install from local source (symlink + register commands)
+# Choose adapters interactively and install snapshots from this checkout
 install:
-    bash bin/install.sh --local
+    bash bin/install.sh
 
 # Install the Claude adapter from local source
 install-claude:
-    bash adapters/claude/install.sh --local
+    bash adapters/claude/install.sh
 
 # Install the OpenCode adapter from local source
 install-opencode:
-    bash adapters/opencode/install.sh --local
+    bash adapters/opencode/install.sh
 
-# Uninstall (remove symlink and commands)
+# Uninstall the managed Claude snapshot and commands
 uninstall:
-    rm -rf ~/.claude/sddw
-    rm -rf ~/.claude/commands/sddw
-    @echo "Uninstalled."
+    bash adapters/claude/install.sh --uninstall
 
-# Uninstall OpenCode command wrappers and local workflow link
+# Uninstall the managed OpenCode snapshot and commands
 uninstall-opencode:
-    rm -rf ~/.config/opencode/sddw
-    rm -rf ~/.config/opencode/commands/sddw-*.md
-    @echo "OpenCode adapter uninstalled."
+    bash adapters/opencode/install.sh --uninstall
